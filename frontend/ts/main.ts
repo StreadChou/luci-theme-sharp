@@ -22,8 +22,6 @@ function initRefresh(ui: LuCIUI): void {
   refreshes.forEach(refresh => {
     refresh.title = t('Refresh current page');
     refresh.setAttribute('aria-label', refresh.title);
-    const label = refresh.querySelector('[data-sharp-refresh-label]');
-    if (label) label.textContent = refresh.title;
     refresh.addEventListener('click', () => {
       if (formEdited && !confirm(t('Refreshing discards unsaved input on this page. Continue?'))) return;
       window.location.reload();
@@ -43,15 +41,10 @@ function initRefresh(ui: LuCIUI): void {
     pendingButtons.forEach(pending => {
       pending.hidden = hidden;
       const countLabel = pending.querySelector('[data-sharp-pending-count]');
-      const textLabel = pending.querySelector('[data-sharp-pending-label]');
       if (countLabel) countLabel.textContent = String(count);
-      else pending.textContent = String(count);
-      if (textLabel) textLabel.textContent = t('Review pending changes');
       pending.title = label;
       pending.setAttribute('aria-label', label);
     });
-    document.querySelector<HTMLElement>('.sharp-settings-dot')!.hidden = hidden;
-    document.querySelector('#sharp-settings-toggle')!.setAttribute('aria-label', hidden ? t('Settings') : `${t('Settings')} · ${label}`);
   };
   new MutationObserver(sync).observe(indicators, { childList: true, subtree: true, characterData: true });
   document.addEventListener('uci-applied', () => { formEdited = false; sync(); });

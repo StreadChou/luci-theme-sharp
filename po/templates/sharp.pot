@@ -12,7 +12,7 @@ msgid_plural "%d menu results"
 msgstr[0] ""
 msgstr[1] ""
 
-#: frontend/ts/main.ts:41
+#: frontend/ts/main.ts:39
 #, c-format
 msgctxt "sharp"
 msgid "%d pending configuration change; click to review"
@@ -25,12 +25,12 @@ msgctxt "sharp"
 msgid "APPEARANCE"
 msgstr ""
 
-#: frontend/ts/appearance.ts:23 frontend/ts/appearance.ts:46 ucode/template/themes/sharp/header.ut:47 ucode/template/themes/sharp/header.ut:86
+#: frontend/ts/appearance.ts:23 frontend/ts/appearance.ts:46 ucode/template/themes/sharp/header.ut:46 ucode/template/themes/sharp/header.ut:85
 msgctxt "sharp"
 msgid "Appearance"
 msgstr ""
 
-#: frontend/ts/dialogs.ts:65 ucode/template/themes/sharp/header.ut:108 ucode/template/themes/sharp/header.ut:66 ucode/template/themes/sharp/header.ut:76
+#: frontend/ts/dialogs.ts:65 ucode/template/themes/sharp/header.ut:101 ucode/template/themes/sharp/header.ut:65 ucode/template/themes/sharp/header.ut:75
 msgctxt "sharp"
 msgid "Close"
 msgstr ""
@@ -70,12 +70,12 @@ msgctxt "sharp"
 msgid "Log out"
 msgstr ""
 
-#: ucode/template/themes/sharp/header.ut:11 ucode/template/themes/sharp/header.ut:19 ucode/template/themes/sharp/header.ut:65 ucode/template/themes/sharp/header.ut:70
+#: ucode/template/themes/sharp/header.ut:11 ucode/template/themes/sharp/header.ut:19 ucode/template/themes/sharp/header.ut:64 ucode/template/themes/sharp/header.ut:69
 msgctxt "sharp"
 msgid "Main menu"
 msgstr ""
 
-#: frontend/ts/main.ts:73
+#: frontend/ts/main.ts:66
 msgctxt "sharp"
 msgid "Menu unavailable. Please refresh."
 msgstr ""
@@ -115,7 +115,7 @@ msgctxt "sharp"
 msgid "Reboot router"
 msgstr ""
 
-#: ucode/template/themes/sharp/header.ut:30 ucode/template/themes/sharp/header.ut:91
+#: ucode/template/themes/sharp/header.ut:29
 msgctxt "sharp"
 msgid "Refresh"
 msgstr ""
@@ -125,14 +125,9 @@ msgctxt "sharp"
 msgid "Refresh current page"
 msgstr ""
 
-#: frontend/ts/main.ts:28
+#: frontend/ts/main.ts:26
 msgctxt "sharp"
 msgid "Refreshing discards unsaved input on this page. Continue?"
-msgstr ""
-
-#: frontend/ts/main.ts:49
-msgctxt "sharp"
-msgid "Review pending changes"
 msgstr ""
 
 #: frontend/ts/navigation.ts:108
@@ -145,7 +140,7 @@ msgctxt "sharp"
 msgid "SEARCH RESULTS"
 msgstr ""
 
-#: ucode/template/themes/sharp/header.ut:102 ucode/template/themes/sharp/header.ut:106 ucode/template/themes/sharp/header.ut:21 ucode/template/themes/sharp/header.ut:23 ucode/template/themes/sharp/header.ut:36
+#: ucode/template/themes/sharp/header.ut:21 ucode/template/themes/sharp/header.ut:23 ucode/template/themes/sharp/header.ut:33 ucode/template/themes/sharp/header.ut:95 ucode/template/themes/sharp/header.ut:99
 msgctxt "sharp"
 msgid "Search"
 msgstr ""
@@ -160,7 +155,7 @@ msgctxt "sharp"
 msgid "Search menus…"
 msgstr ""
 
-#: frontend/ts/dialogs.ts:103 frontend/ts/dialogs.ts:108 frontend/ts/main.ts:54 ucode/template/themes/sharp/header.ut:41 ucode/template/themes/sharp/header.ut:75
+#: frontend/ts/dialogs.ts:103 frontend/ts/dialogs.ts:108 ucode/template/themes/sharp/header.ut:41 ucode/template/themes/sharp/header.ut:74
 msgctxt "sharp"
 msgid "Settings"
 msgstr ""
@@ -184,7 +179,7 @@ msgctxt "sharp"
 msgid "User"
 msgstr ""
 
-#: frontend/ts/navigation.ts:125 ucode/template/themes/sharp/header.ut:55 ucode/template/themes/sharp/header.ut:98
+#: frontend/ts/navigation.ts:125 ucode/template/themes/sharp/header.ut:54 ucode/template/themes/sharp/header.ut:91
 msgctxt "sharp"
 msgid "User menu"
 msgstr ""
@@ -194,7 +189,7 @@ msgctxt "sharp"
 msgid "Username"
 msgstr ""
 
-#: ucode/template/themes/sharp/header.ut:117
+#: ucode/template/themes/sharp/header.ut:110
 msgctxt "sharp"
 msgid "You must enable JavaScript in your browser or LuCI will not work properly."
 msgstr ""

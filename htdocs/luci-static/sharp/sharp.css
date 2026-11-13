@@ -17,6 +17,7 @@
   --sharp-shadow: 0 12px 32px #15213a12, 0 2px 6px #15213a06;
   --sharp-header-shadow: 0 4px 16px #15213a0a, 0 1px 3px #15213a06;
   --sharp-header-height: 72px;
+  --sharp-control-height: 38px;
   --sharp-popover-gap: 4px;
   --sharp-motion-fast: 120ms;
   --sharp-motion-enter: 180ms;
@@ -367,20 +368,33 @@ svg {
   width: 18px;
   height: 18px;
 }
-.sharp-refresh-group {
+.sharp-pending {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  color: var(--sharp-warning);
+  background: transparent;
+  border: 0;
 }
-.sharp-pending {
+.sharp-pending:hover {
+  background: var(--sharp-warning-bg);
+}
+.sharp-pending-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 24px;
   height: 24px;
   padding: 0 6px;
-  margin-left: -4px;
-  color: var(--sharp-warning);
   background: var(--sharp-warning-bg);
   border: 1px solid currentColor;
   font-size: 11px;
   font-weight: 700;
+  white-space: nowrap;
 }
 .sharp-header-divider {
   width: 1px;
@@ -506,10 +520,6 @@ svg {
 }
 .sharp-user-info strong {
   font-weight: 600;
-}
-.sharp-user-info span {
-  color: var(--sharp-muted);
-  font-size: 12px;
 }
 .sharp-logout {
   margin-top: 6px;
@@ -673,10 +683,6 @@ svg {
 .sharp-settings-account strong {
   font-size: 15px;
 }
-.sharp-settings-account div > span {
-  color: var(--sharp-muted);
-  font-size: 12px;
-}
 .sharp-settings-section {
   padding-top: 18px;
   border-top: 1px solid var(--sharp-border);
@@ -721,30 +727,8 @@ svg {
 .sharp-settings-section .sharp-menu-item {
   min-height: 48px;
 }
-.sharp-settings-section .sharp-menu-item > [data-sharp-refresh-label],
-.sharp-settings-section .sharp-menu-item > [data-sharp-pending-label] {
-  flex: 1;
-}
-.sharp-settings-pending {
-  color: var(--sharp-warning);
-}
-.sharp-pending-count {
-  margin-left: auto;
-  padding: 2px 7px;
-  color: var(--sharp-warning);
-  background: var(--sharp-warning-bg);
-  font-size: 12px;
-}
-#sharp-settings-toggle {
-  position: relative;
-}
-.sharp-settings-dot {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 5px;
-  height: 5px;
-  background: var(--sharp-warning);
+.sharp-settings-actions:not(:has(.sharp-native-indicators > :not([data-indicator=poll-status]):not([data-indicator=uci-changes]))) {
+  display: none;
 }
 #sharp-mobile-indicators .sharp-native-indicators:has(> :not([data-indicator=poll-status]):not([data-indicator=uci-changes])) {
   padding: 12px;
@@ -1028,7 +1012,7 @@ svg {
   }
   .sharp-header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: minmax(44px, 1fr) auto minmax(max-content, 1fr);
     gap: 0;
     min-height: 64px;
     padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left));
@@ -1065,6 +1049,10 @@ svg {
     width: 44px;
     height: 44px;
     flex-shrink: 0;
+  }
+  .sharp-header .sharp-pending {
+    min-width: 44px;
+    height: 44px;
   }
   .sharp-header .sharp-desktop-only,
   .sharp-nav,
@@ -1196,17 +1184,19 @@ fieldset.cbi-section {
 }
 :where(#maincontent, .sharp-login, #modal_overlay) :is(input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]), select, textarea) {
   max-width: 100%;
-  min-height: 38px;
+  min-height: var(--sharp-control-height);
   padding: 8px 10px;
   color: var(--sharp-text);
   background: var(--sharp-surface);
   border: 1px solid var(--sharp-border);
   border-radius: 0;
+  line-height: 20px;
+  vertical-align: middle;
 }
-input:focus,
-select:focus,
-textarea:focus {
+:where(#maincontent, .sharp-login, #modal_overlay) :is(input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]), select, textarea):focus {
   border-color: var(--sharp-accent);
+  outline: 2px solid var(--sharp-accent);
+  outline-offset: -2px;
 }
 input[type=checkbox],
 input[type=radio] {
@@ -1239,6 +1229,7 @@ select.cbi-input-select {
 .cbi-button,
 button.cbi-button {
   display: inline-block;
+  min-height: var(--sharp-control-height);
   padding: 8px 14px;
   color: var(--sharp-text);
   background: var(--sharp-surface);
@@ -1247,7 +1238,8 @@ button.cbi-button {
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  line-height: 1.5;
+  line-height: 20px;
+  vertical-align: middle;
   white-space: normal;
   overflow-wrap: anywhere;
 }
@@ -1294,6 +1286,58 @@ button.cbi-button {
 .cbi-section-create {
   margin-top: 16px;
 }
+#maincontent .controls {
+  justify-content: flex-start;
+  gap: 12px 20px;
+}
+#maincontent .controls > div {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  gap: 6px;
+  white-space: normal;
+  align-content: start;
+}
+#maincontent .controls > div:first-child {
+  flex-basis: 100%;
+}
+#maincontent .controls > div > label {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+#maincontent .controls > div > * {
+  min-width: 0;
+  max-width: 100%;
+}
+#maincontent .control-group {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+#maincontent .control-group > input:not([type=checkbox]):not([type=radio]) {
+  flex: 1 1 140px;
+  width: 0;
+  min-width: min(140px, 100%);
+}
+#maincontent .control-group > .btn {
+  flex: 0 1 auto;
+}
+#maincontent .controls > .pager {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+#maincontent .pager > .text {
+  min-width: 0;
+  white-space: normal;
+}
 table,
 .table {
   display: table;
@@ -1335,6 +1379,7 @@ th,
   text-align: left;
   font-size: 11px;
   font-weight: 500;
+  overflow-wrap: normal;
 }
 td,
 .td {
@@ -1357,6 +1402,9 @@ tr:last-child > td,
 }
 .cbi-section-table-row .cbi-button {
   margin: 2px;
+}
+.cbi-section-actions > :is(.btn, .cbi-button) {
+  white-space: nowrap;
 }
 .center {
   text-align: center !important;
@@ -1590,7 +1638,7 @@ body.modal-overlay-active #modal_overlay {
   align-items: center;
   min-width: min(280px, 100%);
   max-width: 100%;
-  min-height: 38px;
+  min-height: var(--sharp-control-height);
   padding: 7px 44px 7px 10px;
   color: var(--sharp-text);
   background: var(--sharp-surface);
@@ -1599,7 +1647,7 @@ body.modal-overlay-active #modal_overlay {
 }
 .cbi-dropdown.cbi-button {
   min-width: 0;
-  min-height: 38px;
+  min-height: var(--sharp-control-height);
   padding: 8px 48px 8px 14px;
   text-align: center;
 }
@@ -1758,48 +1806,47 @@ body.modal-overlay-active #modal_overlay {
   padding: 3px 8px;
 }
 .modal:has(.uci-change-list) {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 55%);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 20px 12px;
 }
 .modal:has(.uci-change-list) > h4 {
-  flex-shrink: 0;
+  grid-area: 1 / 1;
+  align-self: center;
+  margin: 0;
 }
 .modal:has(.uci-change-list) > .cbi-section {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  margin-bottom: 0;
-}
-.modal:has(.uci-change-list) .cbi-section > :is(strong, .uci-change-legend, .button-row) {
-  flex-shrink: 0;
+  display: contents;
 }
 .uci-change-list {
+  grid-area: 2 / 1 / 3 / -1;
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
 }
-.modal:has(.uci-change-list) .cbi-section > strong {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--sharp-muted);
-  font-size: 12px;
-  font-weight: 500;
-}
-.modal:has(.uci-change-list) .cbi-section > br {
+.modal:has(.uci-change-list) .cbi-section > :is(strong, br) {
   display: none;
 }
 .uci-change-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 20px;
-  margin-bottom: 24px;
+  grid-area: 1 / 2;
+  align-self: center;
+  justify-self: end;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px 8px;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
 }
 .uci-change-legend-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  min-width: 0;
   color: var(--sharp-muted);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 1.4;
 }
 :is(.uci-change-list, .uci-change-legend-label) > ins {
   --sharp-change-color: var(--sharp-success);
@@ -1815,8 +1862,8 @@ body.modal-overlay-active #modal_overlay {
 }
 .uci-change-legend-label > :is(ins, del, var) {
   display: block;
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
   flex-shrink: 0;
   overflow: hidden;
   color: transparent;
@@ -1859,8 +1906,9 @@ body.modal-overlay-active #modal_overlay {
   font-weight: 650;
 }
 .modal:has(.uci-change-list) .button-row {
+  grid-area: 3 / 1 / 4 / -1;
   padding-top: 20px;
-  margin-top: 24px;
+  margin-top: 0;
   border-top: 1px solid var(--sharp-border);
 }
 .modal:has(.uci-change-list) .button-row > button:first-child {
@@ -1885,10 +1933,8 @@ body.modal-overlay-active #modal_overlay {
   max-height: min(240px, 40dvh) !important;
 }
 @media (max-width: 680px) {
-  .cbi-button,
-  button.cbi-button,
-  .cbi-dropdown.cbi-button {
-    min-height: 44px;
+  :root {
+    --sharp-control-height: 44px;
   }
   .cbi-dropdown.cbi-button {
     padding-right: 54px;
