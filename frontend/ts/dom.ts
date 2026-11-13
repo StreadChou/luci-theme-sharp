@@ -1,3 +1,5 @@
+import { animatePanel } from './motion';
+
 export function element<K extends keyof HTMLElementTagNameMap>(
   tag: K, className = '', text?: string
 ): HTMLElementTagNameMap[K] {
@@ -7,7 +9,7 @@ export function element<K extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
-interface Popover { trigger: HTMLButtonElement; panel: HTMLElement }
+interface Popover { trigger: HTMLButtonElement; panel: HTMLElement; closing: boolean }
 let current: Popover | undefined;
 
 function fitPopover(panel: HTMLElement): void {
@@ -26,23 +28,32 @@ function fitPopover(panel: HTMLElement): void {
   panel.style.setProperty('--sharp-popover-shift', `${shift}px`);
 }
 
-export function closePopover(restoreFocus = false): void {
-  if (!current) return;
-  current.panel.hidden = true;
-  current.trigger.setAttribute('aria-expanded', 'false');
-  if (restoreFocus) current.trigger.focus();
-  current = undefined;
+export function closePopover(restoreFocus = false, immediate = false): void {
+  const popover = current;
+  if (!popover || (popover.closing && !immediate)) return;
+  popover.closing = true;
+  popover.trigger.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) popover.trigger.focus({ preventScroll: true });
+  popover.panel.inert = true;
+  animatePanel(popover.panel, false, () => {
+    popover.panel.hidden = true;
+    popover.panel.inert = false;
+    if (current === popover) current = undefined;
+  }, immediate);
 }
 
 export function bindPopover(trigger: HTMLButtonElement, panel: HTMLElement): void {
   const open = (): void => {
-    closePopover();
+    if (current?.panel === panel && !current.closing) return;
+    if (current?.panel !== panel) closePopover(false, true);
     panel.hidden = false;
+    panel.inert = false;
     fitPopover(panel);
     trigger.setAttribute('aria-expanded', 'true');
-    current = { trigger, panel };
+    current = { trigger, panel, closing: false };
+    animatePanel(panel, true);
   };
-  trigger.addEventListener('click', () => panel.hidden ? open() : closePopover());
+  trigger.addEventListener('click', () => current?.panel === panel && !current.closing ? closePopover() : open());
   trigger.addEventListener('keydown', event => {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
@@ -63,7 +74,7 @@ export function bindPopover(trigger: HTMLButtonElement, panel: HTMLElement): voi
 export function bindPopoverDismissal(): void {
   const reposition = (): void => {
     if (!current) return;
-    if (!current.trigger.getClientRects().length) closePopover();
+    if (!current.trigger.getClientRects().length) closePopover(false, true);
     else fitPopover(current.panel);
   };
   window.addEventListener('resize', reposition);

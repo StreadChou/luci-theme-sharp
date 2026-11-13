@@ -9,6 +9,76 @@
     return message.replace(/%d/g, String(count));
   }
 
+  // frontend/ts/motion.ts
+  var reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  var running = /* @__PURE__ */ new Map();
+  function cancelMotion(target) {
+    const motion = running.get(target);
+    if (!motion) return;
+    running.delete(target);
+    motion.animation.onfinish = null;
+    motion.animation.cancel();
+  }
+  function animate(target, frames, opening, complete, immediate = false) {
+    cancelMotion(target);
+    const style = getComputedStyle(target);
+    const duration = parseFloat(style.getPropertyValue(opening ? "--sharp-motion-enter" : "--sharp-motion-exit"));
+    if (immediate || reducedMotion.matches || !duration || typeof target.animate !== "function") {
+      complete();
+      return;
+    }
+    const animation = target.animate(frames, {
+      duration,
+      easing: style.getPropertyValue("--sharp-motion-ease").trim(),
+      fill: "both"
+    });
+    const finish = () => {
+      if (running.get(target)?.animation !== animation) return;
+      cancelMotion(target);
+      complete();
+    };
+    running.set(target, { animation, finish });
+    animation.onfinish = finish;
+  }
+  reducedMotion.addEventListener("change", () => {
+    if (reducedMotion.matches) [...running.values()].forEach((motion) => motion.finish());
+  });
+  function animatePanel(panel, opening, complete = () => {
+  }, immediate = false) {
+    const style = getComputedStyle(panel);
+    const shown = { opacity: "1", translate: "0px 0px" };
+    const hidden = {
+      opacity: style.getPropertyValue("--sharp-motion-opacity").trim() || "0",
+      translate: style.getPropertyValue("--sharp-motion-offset").trim() || "0px -6px"
+    };
+    const from = running.has(panel) ? { opacity: style.opacity, translate: style.translate } : opening ? hidden : shown;
+    animate(panel, [from, opening ? shown : hidden], opening, complete, immediate);
+  }
+  function bindDisclosure(details) {
+    const summary = details.querySelector("summary");
+    const content = details.querySelector(".sharp-mobile-links");
+    if (!summary || !content) return;
+    let expanded = details.open;
+    summary.setAttribute("aria-expanded", String(expanded));
+    summary.addEventListener("click", (event) => {
+      event.preventDefault();
+      const from = details.getBoundingClientRect().height;
+      cancelMotion(details);
+      expanded = !expanded;
+      summary.setAttribute("aria-expanded", String(expanded));
+      content.inert = !expanded;
+      details.open = true;
+      const border = parseFloat(getComputedStyle(details).borderBottomWidth) || 0;
+      const to = expanded ? details.getBoundingClientRect().height : summary.getBoundingClientRect().height + border;
+      details.style.overflow = "hidden";
+      animate(details, [{ height: `${from}px` }, { height: `${to}px` }], expanded, () => {
+        details.open = expanded;
+        details.style.removeProperty("overflow");
+        content.inert = false;
+      });
+    });
+  }
+
   // frontend/ts/dom.ts
   function element(tag, className = "", text) {
     const el = document.createElement(tag);
@@ -30,22 +100,31 @@
     const shift = Math.max(16 - rect.left, Math.min(0, width - 16 - rect.right));
     panel.style.setProperty("--sharp-popover-shift", `${shift}px`);
   }
-  function closePopover(restoreFocus = false) {
-    if (!current) return;
-    current.panel.hidden = true;
-    current.trigger.setAttribute("aria-expanded", "false");
-    if (restoreFocus) current.trigger.focus();
-    current = void 0;
+  function closePopover(restoreFocus = false, immediate = false) {
+    const popover = current;
+    if (!popover || popover.closing && !immediate) return;
+    popover.closing = true;
+    popover.trigger.setAttribute("aria-expanded", "false");
+    if (restoreFocus) popover.trigger.focus({ preventScroll: true });
+    popover.panel.inert = true;
+    animatePanel(popover.panel, false, () => {
+      popover.panel.hidden = true;
+      popover.panel.inert = false;
+      if (current === popover) current = void 0;
+    }, immediate);
   }
   function bindPopover(trigger, panel) {
     const open = () => {
-      closePopover();
+      if (current?.panel === panel && !current.closing) return;
+      if (current?.panel !== panel) closePopover(false, true);
       panel.hidden = false;
+      panel.inert = false;
       fitPopover(panel);
       trigger.setAttribute("aria-expanded", "true");
-      current = { trigger, panel };
+      current = { trigger, panel, closing: false };
+      animatePanel(panel, true);
     };
-    trigger.addEventListener("click", () => panel.hidden ? open() : closePopover());
+    trigger.addEventListener("click", () => current?.panel === panel && !current.closing ? closePopover() : open());
     trigger.addEventListener("keydown", (event) => {
       if (event.key === "ArrowDown") {
         event.preventDefault();
@@ -66,7 +145,7 @@
   function bindPopoverDismissal() {
     const reposition = () => {
       if (!current) return;
-      if (!current.trigger.getClientRects().length) closePopover();
+      if (!current.trigger.getClientRects().length) closePopover(false, true);
       else fitPopover(current.panel);
     };
     window.addEventListener("resize", reposition);
@@ -221,6 +300,7 @@
         const mobileItems = element("div", "sharp-mobile-links");
         mobileGroup.append(summary, mobileItems);
         mobileNav.append(mobileGroup);
+        bindDisclosure(mobileGroup);
         const button = element("button", `sharp-nav-button${active ? " is-active" : ""}`);
         button.type = "button";
         button.id = `sharp-nav-toggle-${group.name}`;
@@ -315,22 +395,42 @@
   // frontend/ts/dialogs.ts
   var current2;
   var openers = /* @__PURE__ */ new WeakMap();
+  var dismissers = /* @__PURE__ */ new WeakMap();
   function closeDialogs() {
-    current2?.close();
-    current2 = void 0;
+    if (current2) dismissers.get(current2)?.(true);
   }
   function bindDialog(dialog, triggers, focus, prepare) {
+    let closing = false;
+    const dismiss = (immediate = false) => {
+      if (!dialog.open || closing && !immediate) return;
+      closing = true;
+      dialog.dataset.sharpClosing = "";
+      triggers.forEach((button) => button.setAttribute("aria-expanded", "false"));
+      animatePanel(dialog, false, () => {
+        dialog.close();
+        delete dialog.dataset.sharpClosing;
+        closing = false;
+        if (current2 === dialog) current2 = void 0;
+      }, immediate);
+    };
+    dismissers.set(dialog, dismiss);
     const open = (trigger) => {
       if (document.body.classList.contains("modal-overlay-active")) return;
       if (!dialog.open) {
         const origin = trigger ?? (current2 && openers.get(current2)) ?? document.activeElement;
-        closePopover();
+        closePopover(false, true);
         closeDialogs();
         if (origin instanceof HTMLElement) openers.set(dialog, origin);
         prepare?.();
         dialog.showModal();
         current2 = dialog;
         triggers.forEach((button) => button.setAttribute("aria-expanded", "true"));
+        animatePanel(dialog, true);
+      } else if (closing) {
+        closing = false;
+        delete dialog.dataset.sharpClosing;
+        triggers.forEach((button) => button.setAttribute("aria-expanded", "true"));
+        animatePanel(dialog, true);
       }
       focus?.();
     };
@@ -339,15 +439,22 @@
       if (event.key !== "Escape" || event.isComposing) return;
       event.preventDefault();
       event.stopPropagation();
-      dialog.close();
+      dismiss();
     }, true);
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      dismiss();
+    });
     dialog.querySelectorAll("[data-sharp-dialog-close]").forEach((button) => {
       button.title = t("Close");
       button.setAttribute("aria-label", button.title);
-      button.addEventListener("click", () => dialog.close());
+      button.addEventListener("click", () => dismiss());
     });
     dialog.addEventListener("close", () => {
       if (dialog.open) return;
+      cancelMotion(dialog);
+      delete dialog.dataset.sharpClosing;
+      closing = false;
       triggers.forEach((button) => button.setAttribute("aria-expanded", "false"));
       if (current2 === dialog) current2 = void 0;
       if (current2?.open || document.body.classList.contains("modal-overlay-active")) return;
@@ -364,7 +471,7 @@
       backdrop = outside(event);
     });
     dialog.addEventListener("click", (event) => {
-      if (backdrop && outside(event)) dialog.close();
+      if (backdrop && outside(event)) dismiss();
       backdrop = false;
     });
     return open;
@@ -386,7 +493,7 @@
     const mobile = matchMedia("(max-width: 900px)");
     mobile.addEventListener("change", () => {
       if (!mobile.matches && current2?.classList.contains("sharp-mobile-dialog")) closeDialogs();
-      closePopover();
+      closePopover(false, true);
     });
     const indicators = document.querySelector("#indicators");
     indicators.addEventListener("click", (event) => {

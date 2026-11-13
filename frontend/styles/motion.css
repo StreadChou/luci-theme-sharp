@@ -1,0 +1,40 @@
+/* Motion is limited to theme controls and known LuCI surfaces. */
+:where(html, body.sharp, .sharp-header, .sharp-popover, .sharp-dialog, .sharp-login,
+  .sharp-footer, .sharp-dialog-heading, .sharp-drawer-footer, .sharp-settings-section,
+  .sharp-mobile-group, .sharp-user-info, .sharp-search-field, #sharp-breadcrumb),
+:where(#maincontent, #modal_overlay) :where(.cbi-section, .cbi-value, .modal, .tabs, .cbi-tabmenu, pre, th, td) {
+  transition: background-color var(--sharp-motion-enter), color var(--sharp-motion-enter), border-color var(--sharp-motion-enter), box-shadow var(--sharp-motion-enter);
+}
+:where(.sharp-nav-button, .sharp-icon-button, .sharp-avatar, .sharp-menu-item,
+  .sharp-search-trigger, .sharp-search-result, .sharp-mobile-category, .sharp-appearance-option, .sharp-pending),
+:where(#maincontent, #modal_overlay, .sharp-login) :where(.cbi-button, .btn, input, select, textarea),
+:where(#maincontent) :where(.tabs, .cbi-tabmenu) > li > :is(a, .sharp-tab-label) {
+  transition: background-color var(--sharp-motion-fast), color var(--sharp-motion-fast), border-color var(--sharp-motion-fast), box-shadow var(--sharp-motion-fast);
+}
+.sharp-nav-button > svg, .sharp-mobile-category > svg {
+  transition: transform var(--sharp-motion-enter) var(--sharp-motion-ease);
+}
+.sharp-nav-button[aria-expanded='true'] > svg,
+.sharp-mobile-category[aria-expanded='true'] > svg { transform: rotate(180deg); }
+.sharp-mobile-group[open] > .sharp-mobile-category[aria-expanded='false'] > svg { transform: none; }
+.sharp-nav-menu .sharp-menu-item > svg,
+.sharp-control-menu .sharp-menu-item > svg:last-child {
+  transition: opacity var(--sharp-motion-fast);
+}
+.sharp-popover { --sharp-motion-offset: 0px -6px; }
+.sharp-dialog { --sharp-motion-offset: 0px 10px; }
+.sharp-drawer { --sharp-motion-offset: -100% 0px; --sharp-motion-opacity: 1; --sharp-motion-enter: 240ms; --sharp-motion-exit: 180ms; }
+.sharp-mobile-group { --sharp-motion-enter: 200ms; --sharp-motion-exit: 160ms; }
+.sharp-dialog[data-sharp-closing] { pointer-events: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .sharp-dialog[open]::backdrop { animation: sharp-backdrop-in var(--sharp-motion-enter, 180ms) var(--sharp-motion-ease, cubic-bezier(.2, .8, .2, 1)) both; }
+  .sharp-dialog[data-sharp-closing]::backdrop { animation: sharp-backdrop-out var(--sharp-motion-exit, 120ms) ease-out both; }
+  body.modal-overlay-active #modal_overlay > .modal { animation: sharp-modal-in var(--sharp-motion-enter) var(--sharp-motion-ease); }
+  #maincontent [data-initialized='true'] > [data-tab][data-tab-active='true'] { animation: sharp-tab-in var(--sharp-motion-enter) ease-out; }
+}
+
+@keyframes sharp-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sharp-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes sharp-modal-in { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes sharp-tab-in { from { opacity: .55; } to { opacity: 1; } }

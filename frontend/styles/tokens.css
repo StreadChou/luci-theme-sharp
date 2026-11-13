@@ -17,6 +17,10 @@
   --sharp-header-shadow: 0 4px 16px #15213a0a, 0 1px 3px #15213a06;
   --sharp-header-height: 72px;
   --sharp-popover-gap: 4px;
+  --sharp-motion-fast: 120ms;
+  --sharp-motion-enter: 180ms;
+  --sharp-motion-exit: 120ms;
+  --sharp-motion-ease: cubic-bezier(.2, .8, .2, 1);
 }
 
 :root[data-sharp-theme='dark'] {

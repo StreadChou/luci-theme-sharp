@@ -1,12 +1,14 @@
 import { t } from './i18n';
 import { closePopover } from './dom';
+import { animatePanel, cancelMotion } from './motion';
 
 let current: HTMLDialogElement | undefined;
 const openers = new WeakMap<HTMLDialogElement, HTMLElement>();
+const dismissers = new WeakMap<HTMLDialogElement, (immediate?: boolean) => void>();
 
 export function closeDialogs(): void {
-  current?.close();
-  current = undefined;
+  // Native LuCI modals and breakpoint changes must take over immediately.
+  if (current) dismissers.get(current)?.(true);
 }
 
 /** Native dialogs provide focus containment, Escape dismissal and an inert page. */
@@ -16,17 +18,37 @@ export function bindDialog(
   focus?: () => void,
   prepare?: () => void
 ): (trigger?: HTMLButtonElement) => void {
+  let closing = false;
+  const dismiss = (immediate = false): void => {
+    if (!dialog.open || (closing && !immediate)) return;
+    closing = true;
+    dialog.dataset.sharpClosing = '';
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'false'));
+    animatePanel(dialog, false, () => {
+      dialog.close();
+      delete dialog.dataset.sharpClosing;
+      closing = false;
+      if (current === dialog) current = undefined;
+    }, immediate);
+  };
+  dismissers.set(dialog, dismiss);
   const open = (trigger?: HTMLButtonElement): void => {
     if (document.body.classList.contains('modal-overlay-active')) return;
     if (!dialog.open) {
       const origin = trigger ?? (current && openers.get(current)) ?? document.activeElement;
-      closePopover();
+      closePopover(false, true);
       closeDialogs();
       if (origin instanceof HTMLElement) openers.set(dialog, origin);
       prepare?.();
       dialog.showModal();
       current = dialog;
       triggers.forEach(button => button.setAttribute('aria-expanded', 'true'));
+      animatePanel(dialog, true);
+    } else if (closing) {
+      closing = false;
+      delete dialog.dataset.sharpClosing;
+      triggers.forEach(button => button.setAttribute('aria-expanded', 'true'));
+      animatePanel(dialog, true);
     }
     focus?.();
   };
@@ -36,15 +58,19 @@ export function bindDialog(
     if (event.key !== 'Escape' || event.isComposing) return;
     event.preventDefault();
     event.stopPropagation();
-    dialog.close();
+    dismiss();
   }, true);
+  dialog.addEventListener('cancel', event => { event.preventDefault(); dismiss(); });
   dialog.querySelectorAll<HTMLButtonElement>('[data-sharp-dialog-close]').forEach(button => {
     button.title = t('Close');
     button.setAttribute('aria-label', button.title);
-    button.addEventListener('click', () => dialog.close());
+    button.addEventListener('click', () => dismiss());
   });
   dialog.addEventListener('close', () => {
     if (dialog.open) return;
+    cancelMotion(dialog);
+    delete dialog.dataset.sharpClosing;
+    closing = false;
     triggers.forEach(button => button.setAttribute('aria-expanded', 'false'));
     if (current === dialog) current = undefined;
     // A close event can arrive after another theme or native LuCI dialog opens.
@@ -63,7 +89,7 @@ export function bindDialog(
   let backdrop = false;
   dialog.addEventListener('pointerdown', event => { backdrop = outside(event); });
   dialog.addEventListener('click', event => {
-    if (backdrop && outside(event)) dialog.close();
+    if (backdrop && outside(event)) dismiss();
     backdrop = false;
   });
   return open;
@@ -86,7 +112,7 @@ export function initMobileDialogs(): void {
   const mobile = matchMedia('(max-width: 900px)');
   mobile.addEventListener('change', () => {
     if (!mobile.matches && current?.classList.contains('sharp-mobile-dialog')) closeDialogs();
-    closePopover();
+    closePopover(false, true);
   });
   // Move the original indicators, preserving LuCI's handlers and live updates.
   const indicators = document.querySelector('#indicators')!;

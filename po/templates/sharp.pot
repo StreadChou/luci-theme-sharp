@@ -30,7 +30,7 @@ msgctxt "sharp"
 msgid "Appearance"
 msgstr ""
 
-#: frontend/ts/dialogs.ts:42 ucode/template/themes/sharp/header.ut:108 ucode/template/themes/sharp/header.ut:66 ucode/template/themes/sharp/header.ut:76
+#: frontend/ts/dialogs.ts:65 ucode/template/themes/sharp/header.ut:108 ucode/template/themes/sharp/header.ut:66 ucode/template/themes/sharp/header.ut:76
 msgctxt "sharp"
 msgid "Close"
 msgstr ""
@@ -65,7 +65,7 @@ msgctxt "sharp"
 msgid "Log in"
 msgstr ""
 
-#: frontend/ts/navigation.ts:108
+#: frontend/ts/navigation.ts:110
 msgctxt "sharp"
 msgid "Log out"
 msgstr ""
@@ -80,7 +80,7 @@ msgctxt "sharp"
 msgid "Menu unavailable. Please refresh."
 msgstr ""
 
-#: frontend/ts/dialogs.ts:76
+#: frontend/ts/dialogs.ts:102
 msgctxt "sharp"
 msgid "Navigation"
 msgstr ""
@@ -90,7 +90,7 @@ msgctxt "sharp"
 msgid "No matching menu"
 msgstr ""
 
-#: frontend/ts/dialogs.ts:80
+#: frontend/ts/dialogs.ts:106
 msgctxt "sharp"
 msgid "Open navigation"
 msgstr ""
@@ -110,7 +110,7 @@ msgctxt "sharp"
 msgid "QUICK ACCESS"
 msgstr ""
 
-#: frontend/ts/navigation.ts:107
+#: frontend/ts/navigation.ts:109
 msgctxt "sharp"
 msgid "Reboot router"
 msgstr ""
@@ -135,7 +135,7 @@ msgctxt "sharp"
 msgid "Review pending changes"
 msgstr ""
 
-#: frontend/ts/navigation.ts:106
+#: frontend/ts/navigation.ts:108
 msgctxt "sharp"
 msgid "Router password"
 msgstr ""
@@ -160,7 +160,7 @@ msgctxt "sharp"
 msgid "Search menus…"
 msgstr ""
 
-#: frontend/ts/dialogs.ts:77 frontend/ts/dialogs.ts:82 frontend/ts/main.ts:54 ucode/template/themes/sharp/header.ut:41 ucode/template/themes/sharp/header.ut:75
+#: frontend/ts/dialogs.ts:103 frontend/ts/dialogs.ts:108 frontend/ts/main.ts:54 ucode/template/themes/sharp/header.ut:41 ucode/template/themes/sharp/header.ut:75
 msgctxt "sharp"
 msgid "Settings"
 msgstr ""
@@ -184,7 +184,7 @@ msgctxt "sharp"
 msgid "User"
 msgstr ""
 
-#: frontend/ts/navigation.ts:123 ucode/template/themes/sharp/header.ut:55 ucode/template/themes/sharp/header.ut:98
+#: frontend/ts/navigation.ts:125 ucode/template/themes/sharp/header.ut:55 ucode/template/themes/sharp/header.ut:98
 msgctxt "sharp"
 msgid "User menu"
 msgstr ""

@@ -1,6 +1,7 @@
 import { t } from './i18n';
 import { bindPopover, element } from './dom';
 import { icon, type IconName } from './icons';
+import { bindDisclosure } from './motion';
 
 export interface SearchEntry { title: string; group: string; url: string }
 
@@ -30,6 +31,7 @@ export function initNavigation(ui: LuCIUI, tree: LuCIMenuNode): SearchEntry[] {
       const mobileItems = element('div', 'sharp-mobile-links');
       mobileGroup.append(summary, mobileItems);
       mobileNav.append(mobileGroup);
+      bindDisclosure(mobileGroup);
       const button = element('button', `sharp-nav-button${active ? ' is-active' : ''}`);
       button.type = 'button';
       button.id = `sharp-nav-toggle-${group.name}`;
