@@ -1,0 +1,118 @@
+{%
+    const hostname = striptags(ubus.call('system', 'board')?.hostname ?? 'OpenWrt');
+    const username = ctx.authuser ?? _('User', 'sharp');
+    const resolved_path = length(ctx.path) > length(ctx.request_path) ? ctx.path : ctx.request_path;
+    include('themes/sharp/head', { hostname, is_login: false });
+%}
+<body class="sharp lang_{{ dispatcher.lang }}" data-page="{{ entityencode(join('-', resolved_path), true) }}">
+    <a class="sharp-skip" href="#maincontent">{{ _('Skip to content', 'sharp') }}</a>
+    <header class="sharp-header" id="sharp-header">
+        <button id="sharp-mobile-menu-toggle" class="sharp-icon-button sharp-mobile-only" type="button"
+            aria-label="{{ _('Main menu', 'sharp') }}" aria-haspopup="dialog" aria-controls="sharp-mobile-menu" aria-expanded="false">
+            <span data-sharp-icon="menu" aria-hidden="true"></span>
+        </button>
+        <div class="sharp-header-start">
+            <a class="sharp-brand" href="{{ dispatcher.build_url('admin') }}" aria-label="Sharp {{ entityencode(hostname, true) }}">
+                <img src="{{ media }}/logo.svg" width="28" height="28" alt="">
+                <span>SHARP</span>
+            </a>
+            <nav id="sharp-nav" class="sharp-nav" aria-label="{{ _('Main menu', 'sharp') }}"></nav>
+            <button class="sharp-search-trigger sharp-search-desktop" type="button" data-sharp-search-open
+                aria-label="{{ _('Search', 'sharp') }}" aria-haspopup="dialog" aria-controls="sharp-search-dialog">
+                <span class="sharp-search-icon" data-sharp-icon="search" aria-hidden="true"></span>
+                <span class="sharp-search-label">{{ _('Search', 'sharp') }}</span>
+                <kbd class="sharp-search-shortcut" aria-hidden="true">⌘ K</kbd>
+            </button>
+        </div>
+        <div class="sharp-header-end">
+            <div id="indicators" class="sharp-native-indicators"></div>
+            <div class="sharp-refresh-group sharp-desktop-only">
+                <button class="sharp-icon-button" id="sharp-refresh" data-sharp-refresh type="button" title="{{ _('Refresh', 'sharp') }}" aria-label="{{ _('Refresh', 'sharp') }}">
+                    <span data-sharp-icon="refresh" aria-hidden="true"></span>
+                </button>
+                <button id="sharp-pending" class="sharp-pending" data-sharp-pending type="button" hidden></button>
+            </div>
+            <button class="sharp-icon-button sharp-search-mobile" type="button" data-sharp-search-open
+                aria-label="{{ _('Search', 'sharp') }}" title="{{ _('Search', 'sharp') }}"
+                aria-haspopup="dialog" aria-controls="sharp-search-dialog">
+                <span data-sharp-icon="search" aria-hidden="true"></span>
+            </button>
+            <button id="sharp-settings-toggle" class="sharp-icon-button sharp-mobile-only" type="button"
+                aria-label="{{ _('Settings', 'sharp') }}" aria-haspopup="dialog" aria-controls="sharp-settings-dialog" aria-expanded="false">
+                <span data-sharp-icon="settings" aria-hidden="true"></span>
+                <i class="sharp-settings-dot" hidden aria-hidden="true"></i>
+            </button>
+            <div class="sharp-control sharp-desktop-only">
+                <button id="sharp-appearance-toggle" class="sharp-icon-button" type="button"
+                    aria-label="{{ _('Appearance', 'sharp') }}" title="{{ _('Appearance', 'sharp') }}"
+                    aria-expanded="false" aria-controls="sharp-appearance-menu">
+                    <span data-sharp-icon="sun" aria-hidden="true"></span>
+                </button>
+                <div id="sharp-appearance-menu" class="sharp-popover sharp-control-menu" role="menu" hidden></div>
+            </div>
+            <span class="sharp-header-divider sharp-desktop-only" aria-hidden="true"></span>
+            <div class="sharp-control sharp-desktop-only">
+                <button id="sharp-user-toggle" class="sharp-avatar" type="button" aria-label="{{ _('User menu', 'sharp') }}"
+                    aria-expanded="false" aria-controls="sharp-user-menu">{{ entityencode(uc(substr(username, 0, 1)), true) }}</button>
+                <div id="sharp-user-menu" class="sharp-popover sharp-user-menu" role="menu" hidden>
+                    <div class="sharp-user-info"><strong>{{ entityencode(username, true) }}</strong><span>{{ entityencode(hostname, true) }}</span></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <dialog id="sharp-mobile-menu" class="sharp-dialog sharp-mobile-dialog sharp-drawer" aria-labelledby="sharp-mobile-menu-title">
+        <div class="sharp-dialog-heading">
+            <h2 id="sharp-mobile-menu-title">{{ _('Main menu', 'sharp') }}</h2>
+            <button class="sharp-icon-button" type="button" data-sharp-dialog-close aria-label="{{ _('Close', 'sharp') }}">
+                <span data-sharp-icon="close" aria-hidden="true"></span>
+            </button>
+        </div>
+        <nav id="sharp-mobile-nav" class="sharp-mobile-nav" aria-label="{{ _('Main menu', 'sharp') }}"></nav>
+        <div class="sharp-drawer-footer"><span class="sharp-device"><i></i>{{ hostname }}</span></div>
+    </dialog>
+    <dialog id="sharp-settings-dialog" class="sharp-dialog sharp-mobile-dialog sharp-settings-dialog" aria-labelledby="sharp-settings-title">
+        <div class="sharp-dialog-heading">
+            <h2 id="sharp-settings-title">{{ _('Settings', 'sharp') }}</h2>
+            <button class="sharp-icon-button" type="button" data-sharp-dialog-close aria-label="{{ _('Close', 'sharp') }}">
+                <span data-sharp-icon="close" aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="sharp-settings-body">
+            <div class="sharp-settings-account">
+                <span class="sharp-avatar" aria-hidden="true">{{ entityencode(uc(substr(username, 0, 1)), true) }}</span>
+                <div><strong>{{ entityencode(username, true) }}</strong><span>{{ entityencode(hostname, true) }}</span></div>
+            </div>
+            <section class="sharp-settings-section" aria-labelledby="sharp-settings-appearance-title">
+                <h3 id="sharp-settings-appearance-title">{{ _('Appearance', 'sharp') }}</h3>
+                <div id="sharp-mobile-appearance" class="sharp-appearance-options" role="group" aria-labelledby="sharp-settings-appearance-title"></div>
+            </section>
+            <section class="sharp-settings-section sharp-settings-actions">
+                <button class="sharp-menu-item" data-sharp-refresh type="button">
+                    <span data-sharp-icon="refresh" aria-hidden="true"></span><span data-sharp-refresh-label>{{ _('Refresh', 'sharp') }}</span>
+                </button>
+                <button class="sharp-menu-item sharp-settings-pending" data-sharp-pending type="button" hidden>
+                    <span data-sharp-icon="changes" aria-hidden="true"></span><span data-sharp-pending-label></span><span data-sharp-pending-count class="sharp-pending-count"></span>
+                </button>
+                <div id="sharp-mobile-indicators"></div>
+            </section>
+            <nav id="sharp-settings-user-links" class="sharp-settings-section" aria-label="{{ _('User menu', 'sharp') }}"></nav>
+        </div>
+    </dialog>
+    <dialog id="sharp-search-dialog" class="sharp-dialog sharp-search-dialog" aria-labelledby="sharp-search-title">
+        <h2 id="sharp-search-title" class="visually-hidden">{{ _('Search', 'sharp') }}</h2>
+        <div class="sharp-search-field">
+            <span data-sharp-icon="search" aria-hidden="true"></span>
+            <input id="sharp-search-input" type="search" autocomplete="off" autocapitalize="none" spellcheck="false"
+                placeholder="{{ _('Search', 'sharp') }}" aria-label="{{ _('Search', 'sharp') }}"
+                aria-controls="sharp-search-results" autofocus>
+            <button id="sharp-search-close" class="sharp-icon-button" type="button" data-sharp-dialog-close aria-label="{{ _('Close', 'sharp') }}" title="{{ _('Close', 'sharp') }}">
+                <span data-sharp-icon="close" aria-hidden="true"></span>
+            </button>
+        </div>
+        <div id="sharp-search-results" class="sharp-search-results"></div>
+        <p id="sharp-search-status" class="visually-hidden" role="status"></p>
+    </dialog>
+    <main id="maincontent" class="sharp-main" tabindex="-1">
+        <div class="sharp-page-meta"><span id="sharp-breadcrumb"></span></div>
+        <noscript><div class="alert-message error">{{ _('You must enable JavaScript in your browser or LuCI will not work properly.', 'sharp') }}</div></noscript>
+        <div id="tabmenu" class="sharp-page-tabs" hidden></div>

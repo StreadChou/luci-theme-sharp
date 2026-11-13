@@ -1,0 +1,8 @@
+{% include('header') %}
+<div id="view">
+    <div class="cbi-map" id="sharp-config">
+        <h2>{{ _('Sharp theme settings') }}</h2>
+        <section class="cbi-section sharp-config-empty" aria-label="{{ _('Sharp theme settings') }}"></section>
+    </div>
+</div>
+{% include('footer') %}

@@ -1,0 +1,8 @@
+**
+!.dev/
+!.dev/cache/
+!.dev/cache/openwrt-*.tar.gz
+!dev/
+!dev/entrypoint.sh
+!root/
+!root/**

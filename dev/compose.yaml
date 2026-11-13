@@ -1,0 +1,15 @@
+name: luci-theme-sharp
+services:
+  luci:
+    hostname: sharp-dev
+    init: true
+    build:
+      context: ..
+      dockerfile: dev/Dockerfile
+      args:
+        ROOTFS: ${SHARP_ROOTFS:-openwrt-arm64.tar.gz}
+    ports:
+      - "127.0.0.1:${SHARP_PORT:-8090}:80"
+    volumes:
+      - ../htdocs/luci-static/sharp:/www/luci-static/sharp:ro
+      - ../ucode/template/themes/sharp:/usr/share/ucode/luci/template/themes/sharp:ro

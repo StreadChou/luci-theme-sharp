@@ -1,0 +1,200 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-theme-sharp\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: frontend/ts/search.ts:37
+#, c-format
+msgctxt "sharp"
+msgid "%d menu result"
+msgid_plural "%d menu results"
+msgstr[0] ""
+msgstr[1] ""
+
+#: frontend/ts/main.ts:41
+#, c-format
+msgctxt "sharp"
+msgid "%d pending configuration change; click to review"
+msgid_plural "%d pending configuration changes; click to review"
+msgstr[0] ""
+msgstr[1] ""
+
+#: frontend/ts/appearance.ts:57
+msgctxt "sharp"
+msgid "APPEARANCE"
+msgstr ""
+
+#: frontend/ts/appearance.ts:23 frontend/ts/appearance.ts:46 ucode/template/themes/sharp/header.ut:47 ucode/template/themes/sharp/header.ut:86
+msgctxt "sharp"
+msgid "Appearance"
+msgstr ""
+
+#: frontend/ts/dialogs.ts:42 ucode/template/themes/sharp/header.ut:108 ucode/template/themes/sharp/header.ut:66 ucode/template/themes/sharp/header.ut:76
+msgctxt "sharp"
+msgid "Close"
+msgstr ""
+
+#: frontend/ts/search.ts:19
+msgctxt "sharp"
+msgid "Close search"
+msgstr ""
+
+#: frontend/ts/appearance.ts:16
+msgctxt "sharp"
+msgid "Dark"
+msgstr ""
+
+#: frontend/ts/appearance.ts:16
+msgctxt "sharp"
+msgid "Follow system"
+msgstr ""
+
+#: ucode/template/themes/sharp/sysauth.ut:10
+msgctxt "sharp"
+msgid "Invalid username and/or password! Please try again."
+msgstr ""
+
+#: frontend/ts/appearance.ts:16
+msgctxt "sharp"
+msgid "Light"
+msgstr ""
+
+#: ucode/template/themes/sharp/sysauth.ut:27 ucode/template/themes/sharp/sysauth.ut:8
+msgctxt "sharp"
+msgid "Log in"
+msgstr ""
+
+#: frontend/ts/navigation.ts:108
+msgctxt "sharp"
+msgid "Log out"
+msgstr ""
+
+#: ucode/template/themes/sharp/header.ut:11 ucode/template/themes/sharp/header.ut:19 ucode/template/themes/sharp/header.ut:65 ucode/template/themes/sharp/header.ut:70
+msgctxt "sharp"
+msgid "Main menu"
+msgstr ""
+
+#: frontend/ts/main.ts:73
+msgctxt "sharp"
+msgid "Menu unavailable. Please refresh."
+msgstr ""
+
+#: frontend/ts/dialogs.ts:76
+msgctxt "sharp"
+msgid "Navigation"
+msgstr ""
+
+#: frontend/ts/search.ts:28
+msgctxt "sharp"
+msgid "No matching menu"
+msgstr ""
+
+#: frontend/ts/dialogs.ts:80
+msgctxt "sharp"
+msgid "Open navigation"
+msgstr ""
+
+#: ucode/template/themes/sharp/sysauth.ut:8
+msgctxt "sharp"
+msgid "OpenWrt control panel"
+msgstr ""
+
+#: ucode/template/themes/sharp/sysauth.ut:14
+msgctxt "sharp"
+msgid "Password"
+msgstr ""
+
+#: frontend/ts/search.ts:27
+msgctxt "sharp"
+msgid "QUICK ACCESS"
+msgstr ""
+
+#: frontend/ts/navigation.ts:107
+msgctxt "sharp"
+msgid "Reboot router"
+msgstr ""
+
+#: ucode/template/themes/sharp/header.ut:30 ucode/template/themes/sharp/header.ut:91
+msgctxt "sharp"
+msgid "Refresh"
+msgstr ""
+
+#: frontend/ts/main.ts:23
+msgctxt "sharp"
+msgid "Refresh current page"
+msgstr ""
+
+#: frontend/ts/main.ts:28
+msgctxt "sharp"
+msgid "Refreshing discards unsaved input on this page. Continue?"
+msgstr ""
+
+#: frontend/ts/main.ts:49
+msgctxt "sharp"
+msgid "Review pending changes"
+msgstr ""
+
+#: frontend/ts/navigation.ts:106
+msgctxt "sharp"
+msgid "Router password"
+msgstr ""
+
+#: frontend/ts/search.ts:27
+msgctxt "sharp"
+msgid "SEARCH RESULTS"
+msgstr ""
+
+#: ucode/template/themes/sharp/header.ut:102 ucode/template/themes/sharp/header.ut:106 ucode/template/themes/sharp/header.ut:21 ucode/template/themes/sharp/header.ut:23 ucode/template/themes/sharp/header.ut:36
+msgctxt "sharp"
+msgid "Search"
+msgstr ""
+
+#: frontend/ts/search.ts:14
+msgctxt "sharp"
+msgid "Search menus"
+msgstr ""
+
+#: frontend/ts/search.ts:16
+msgctxt "sharp"
+msgid "Search menus…"
+msgstr ""
+
+#: frontend/ts/dialogs.ts:77 frontend/ts/dialogs.ts:82 frontend/ts/main.ts:54 ucode/template/themes/sharp/header.ut:41 ucode/template/themes/sharp/header.ut:75
+msgctxt "sharp"
+msgid "Settings"
+msgstr ""
+
+#: root/usr/share/luci/menu.d/luci-theme-sharp.json:1 ucode/template/themes/sharp/settings.ut:4 ucode/template/themes/sharp/settings.ut:5
+msgid "Sharp theme settings"
+msgstr ""
+
+#: ucode/template/themes/sharp/header.ut:8
+msgctxt "sharp"
+msgid "Skip to content"
+msgstr ""
+
+#: frontend/ts/layout.ts:25
+msgctxt "sharp"
+msgid "Table, scroll horizontally to see all content"
+msgstr ""
+
+#: ucode/template/themes/sharp/header.ut:3
+msgctxt "sharp"
+msgid "User"
+msgstr ""
+
+#: frontend/ts/navigation.ts:123 ucode/template/themes/sharp/header.ut:55 ucode/template/themes/sharp/header.ut:98
+msgctxt "sharp"
+msgid "User menu"
+msgstr ""
+
+#: ucode/template/themes/sharp/sysauth.ut:12
+msgctxt "sharp"
+msgid "Username"
+msgstr ""
+
+#: ucode/template/themes/sharp/header.ut:117
+msgctxt "sharp"
+msgid "You must enable JavaScript in your browser or LuCI will not work properly."
+msgstr ""

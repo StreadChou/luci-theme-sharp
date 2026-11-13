@@ -1,0 +1,35 @@
+{%
+    import { stat } from 'fs';
+    http.prepare_content('text/html; charset=UTF-8');
+    const sheet = stat('/www' + media + '/sharp.css');
+    const asset_version = sheet ? sprintf('%d-%d', sheet.mtime, sheet.size) : '0';
+    const catalog = stat('/usr/lib/lua/luci/i18n/sharp.' + dispatcher.lang + '.lmo');
+    const translation_version = catalog ? sprintf('%d-%d', catalog.mtime, catalog.size) : '0';
+%}
+<!doctype html>
+<html lang="{{ dispatcher.lang }}" data-sharp-mode="system" data-sharp-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="robots" content="noindex, nofollow">
+    <title>{{ striptags(hostname) }} · Sharp</title>
+    <link rel="icon" type="image/svg+xml" href="{{ media }}/logo.svg">
+    <script>
+        (function () {
+            var mode = 'system';
+            try { mode = localStorage.getItem('sharp:appearance') || mode; } catch (_) {}
+            if (!['light', 'dark', 'system'].includes(mode)) mode = 'system';
+            document.documentElement.dataset.sharpMode = mode;
+            document.documentElement.dataset.sharpTheme = mode === 'system'
+                ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : mode;
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ media }}/sharp.css?v={{ asset_version }}">
+    {% if (node?.css): %}<link rel="stylesheet" href="{{ resource }}/{{ node.css }}">{% endif %}
+    {% if (css): %}<style>{{ css }}</style>{% endif %}
+    {% if (!is_login): %}
+    <script src="{{ dispatcher.build_url('admin/translations', dispatcher.lang) }}?v={{ translation_version }}"></script>
+    <script src="{{ resource }}/cbi.js"></script>
+    {% endif %}
+</head>

@@ -1,0 +1,34 @@
+{%
+    const hostname = striptags(ubus.call('system', 'board')?.hostname ?? 'OpenWrt');
+    include('themes/sharp/head', { hostname, is_login: true });
+%}
+<body class="sharp sharp-auth">
+    <main class="sharp-login">
+        <a class="sharp-brand" href="{{ dispatcher.build_url() }}"><img src="{{ media }}/logo.svg" width="30" height="30" alt=""><span>SHARP</span></a>
+        <div class="sharp-login-heading"><span class="sharp-eyebrow">{{ _('OpenWrt control panel', 'sharp') }}</span><h1>{{ _('Log in', 'sharp') }}</h1><p>{{ hostname }}</p></div>
+        <form method="post" action="{{ entityencode(http.getenv('REQUEST_URI'), true) }}">
+            {% if (fuser && !auth_plugin): %}<div class="alert-message error">{{ _('Invalid username and/or password! Please try again.', 'sharp') }}</div>{% endif %}
+            {% if (auth_message): %}<div class="alert-message warning">{{ entityencode(auth_message, true) }}</div>{% endif %}
+            <label for="sharp-username">{{ _('Username', 'sharp') }}</label>
+            <input id="sharp-username" name="luci_username" type="text" value="{{ entityencode(duser ?? 'root', true) }}" autocomplete="username" autocapitalize="none">
+            <label for="sharp-password">{{ _('Password', 'sharp') }}</label>
+            <input id="sharp-password" name="luci_password" type="password" autocomplete="current-password" autofocus>
+            {% for (let field in auth_fields ?? []): %}
+            <label for="{{ entityencode(field.name, true) }}">{{ _(field.label ?? field.name) }}</label>
+            <input id="{{ entityencode(field.name, true) }}" name="{{ entityencode(field.name, true) }}" type="{{ entityencode(field.type ?? 'text', true) }}"
+                {% if (field.placeholder): %} placeholder="{{ entityencode(field.placeholder, true) }}"{% endif %}
+                {% if (field.inputmode): %} inputmode="{{ entityencode(field.inputmode, true) }}"{% endif %}
+                {% if (field.pattern): %} pattern="{{ entityencode(field.pattern, true) }}"{% endif %}
+                {% if (field.maxlength): %} maxlength="{{ entityencode(field.maxlength, true) }}"{% endif %}
+                {% if (field.autocomplete): %} autocomplete="{{ entityencode(field.autocomplete, true) }}"{% endif %}
+                {% if (field.required): %} required{% endif %}>
+            {% endfor %}
+            {% if (auth_html): %}<div>{{ auth_html }}</div>{% endif %}
+            <button type="submit" class="cbi-button cbi-button-apply">{{ _('Log in', 'sharp') }} <span aria-hidden="true">→</span></button>
+            {% for (let asset in auth_assets ?? []): %}{% if (asset.type == 'script'): %}<script src="{{ asset.src }}"></script>{% endif %}{% endfor %}
+        </form>
+        <div class="sharp-login-foot"><span>{{ version.distname }} {{ version.distversion }}</span><span>SHARP / 0.1</span></div>
+    </main>
+    <script src="{{ media }}/sharp.js" defer></script>
+</body>
+</html>

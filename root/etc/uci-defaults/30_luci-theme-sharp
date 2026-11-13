@@ -1,0 +1,7 @@
+#!/bin/sh
+uci -q batch <<'EOF'
+set luci.themes.Sharp=/luci-static/sharp
+set luci.main.mediaurlbase=/luci-static/sharp
+commit luci
+EOF
+exit 0

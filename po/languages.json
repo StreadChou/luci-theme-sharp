@@ -1,0 +1,4 @@
+{
+  "en": { "name": "English", "source": true },
+  "zh_Hans": { "name": "简体中文 (Simplified Chinese)", "locale": "zh-cn" }
+}

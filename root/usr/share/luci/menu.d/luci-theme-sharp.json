@@ -1,0 +1,10 @@
+{
+  "admin/system/sharp": {
+    "title": "Sharp theme settings",
+    "order": 90,
+    "action": {
+      "type": "template",
+      "path": "themes/sharp/settings"
+    }
+  }
+}

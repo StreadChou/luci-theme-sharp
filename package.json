@@ -1,0 +1,25 @@
+{
+  "name": "luci-theme-sharp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An independent, angular top-navigation theme for OpenWrt LuCI",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "i18n": "node scripts/i18n.mjs",
+    "typecheck": "tsc --noEmit",
+    "dev": "node scripts/dev.mjs",
+    "dev:up": "node scripts/dev.mjs --detach",
+    "dev:sync": "node scripts/dev-support.mjs",
+    "dev:stop": "docker compose -f dev/compose.yaml stop",
+    "dev:logs": "docker compose -f dev/compose.yaml logs --tail=60",
+    "dev:rebuild": "node scripts/dev.mjs --rebuild --detach",
+    "check": "npm run typecheck && npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "typescript": "5.9.3"
+  }
+}
