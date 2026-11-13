@@ -10,7 +10,7 @@ Sharp 是一款独立开发的 OpenWrt LuCI 主题，采用简洁的顶部导航
 
 当前面向 **OpenWrt 25.12 的 Ucode 版 LuCI**，路由器需已安装 LuCI。旧版 Lua `.htm` 主题环境不在支持范围内。
 
-准备与目标固件版本和架构匹配的 `luci-theme-sharp` 安装包。需要自行生成安装包时，参阅[软件包构建](docs/BUILD.md)。
+从 [GitHub Releases](https://github.com/StreadChou/luci-theme-sharp/releases/latest) 下载 `luci-theme-sharp` 的 `.apk` 安装包，确认固件符合对应版本的发布说明。官方发布包不依赖 CPU 架构，简体中文已包含在主题包中。需要自行生成安装包时，参阅[软件包构建](docs/BUILD.md)。
 
 ### 安装主题
 

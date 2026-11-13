@@ -1,0 +1,98 @@
+name: Release packages
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/check.yml
+
+  build:
+    name: Build OpenWrt 25.12 APK
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      prerelease: ${{ steps.metadata.outputs.prerelease }}
+    env:
+      SHARP_SDK_FILE: openwrt-sdk-25.12.5-x86-64_gcc-14.3.0_musl.Linux-x86_64.tar.zst
+      SHARP_SDK_URL: https://downloads.openwrt.org/releases/25.12.5/targets/x86/64
+      SHARP_SDK_SHA256: 0c8df0151a1e88feb7c03d694d61f6a18d51872815b7c811d76e2b77504d5e9c
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+
+      - name: Validate release version and notes
+        id: metadata
+        run: node .github/scripts/release-metadata.mjs >> "$GITHUB_OUTPUT"
+
+      - name: Install SDK dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bison clang curl file flex g++-multilib \
+            gawk gcc-multilib gettext git libncurses-dev libssl-dev python3 \
+            python3-setuptools python3-venv rsync unzip wget xz-utils zlib1g-dev zstd
+
+      - name: Cache the verified SDK archive
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .dev/cache/openwrt-sdk/${{ env.SHARP_SDK_FILE }}
+          key: sharp-sdk-${{ runner.os }}-${{ env.SHARP_SDK_SHA256 }}
+
+      - name: Compile and verify the theme package
+        env:
+          SHARP_APK_VERSION: ${{ steps.metadata.outputs.apk_version }}
+          SHARP_PACKAGE_RELEASE: ${{ steps.metadata.outputs.package_release }}
+        run: bash .github/scripts/build-package.sh
+
+      - name: Upload package and checksums
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: luci-theme-sharp-apk
+          path: .dev/release-artifacts/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: luci-theme-sharp-apk
+          path: release-assets
+
+      - name: Publish the tagged version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          PRERELEASE: ${{ needs.build.outputs.prerelease }}
+        run: |
+          cd release-assets
+          sha256sum --check SHA256SUMS
+          cd ..
+          flags=(--latest)
+          if [ "$PRERELEASE" = true ]; then
+            flags=(--prerelease --latest=false)
+          fi
+          gh release create "$RELEASE_TAG" release-assets/* \
+            --verify-tag --title "Sharp $RELEASE_TAG" \
+            --notes-file "docs/releases/$RELEASE_TAG.md" "${flags[@]}"

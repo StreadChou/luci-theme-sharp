@@ -64,6 +64,8 @@
 | `po/` | 语言注册表、翻译源文件及提取模板 |
 | `root/usr/share/luci/menu.d/` | Sharp 自己的菜单定义 |
 | `scripts/`、`dev/`、`Makefile` | 构建、开发环境和 OpenWrt 打包 |
+| `.github/workflows/`、`.github/scripts/` | GitHub 检查、SDK 打包、版本校验及 Release 发布 |
+| `docs/releases/` | 随版本维护的发布说明，首版包含项目介绍 |
 | `docs/` | 开发指南、软件包构建和多语言文档；入口为 `docs/README.md` |
 
 修改源文件后通过脚本生成产物，不直接手改 `htdocs/luci-static/sharp/sharp.js`、`sharp.css`、`po/templates/sharp.pot`、`root/usr/lib/lua/luci/i18n/sharp.*.lmo` 或 `root/etc/uci-defaults/31_luci-theme-sharp-languages`。这些生成文件随源码分发，打包无需安装 npm 依赖；代码交付时保持它们与源文件一致。
@@ -108,6 +110,7 @@
 ## 验证与交付
 
 - 源码变更完成后运行 `npm run check`。纯文档修改检查内容、命令和文件引用即可，无需启动 Docker 或重复构建。不要为简单样式改动增加只复刻实现的测试。
+- GitHub 发布使用 `v<版本>` 标签，版本须与 `Makefile`、`package.json` 和 `package-lock.json` 一致，并提供 `docs/releases/<标签>.md`。`main` 提交和 PR 执行检查；标签推送执行 SDK 打包及发布。手动运行发布工作流并选择分支只生成 artifact。发布流程见 `docs/BUILD.md`，已发布标签不移动。
 - 涉及界面或交互时，在真实 Sharp 开发服务上刷新验证，不能只看静态截图或构建成功。选择与改动有关的页面，不必每次重复全量验证。
 - 通用标签修改可用「概览」（默认标签）、「启动项」（异步原生标签）、「管理权」（路由子标签）检查；必要时再看空白 Sharp 设置页。检查切换后内容和选中态一致，没有重复标签。
 - 响应式修改至少覆盖相关桌面和手机宽度；通用溢出改动可用 320/390px 检查窄屏，并按需检查 900px 断点两侧。关注页面宽度、局部滚动、弹层遮挡及亮暗配色。

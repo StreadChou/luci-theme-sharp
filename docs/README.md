@@ -7,7 +7,7 @@
 | 文档 | 内容 |
 | --- | --- |
 | [开发指南](DEVELOPMENT.md) | 环境准备、本地预览、源码结构、修改同步与验证 |
-| [软件包构建](BUILD.md) | 资源准备、OpenWrt SDK / 源码树编译与安装包输出 |
+| [软件包构建](BUILD.md) | 资源准备、OpenWrt SDK 编译、GitHub Actions 与版本发布 |
 | [多语言](I18N.md) | 翻译上下文、新增语言与语言目录生成 |
 
 AI 开发者开始工作前还应阅读根目录的 [AGENTS.md](../AGENTS.md)，遵循项目开发约定。
