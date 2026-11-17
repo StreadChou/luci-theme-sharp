@@ -66,8 +66,44 @@ staging_dir/host/bin/apk adbdump "$package" > "$artifacts/package-metadata.txt"
 grep -Eq '^[[:space:]]*name: luci-theme-sharp$' "$artifacts/package-metadata.txt"
 grep -Fxq "  version: $SHARP_APK_VERSION-r$SHARP_PACKAGE_RELEASE" "$artifacts/package-metadata.txt"
 grep -Eq '^[[:space:]]*arch: (all|noarch)$' "$artifacts/package-metadata.txt"
-for required in sharp.js sharp.css header.ut sharp.zh-cn.lmo 31_luci-theme-sharp-languages; do
-  grep -Fq "name: $required" "$artifacts/package-metadata.txt"
+require_package_file() {
+  awk -v directory="$1" -v filename="$2" -v required_mode="${3:-}" '
+    /^  - / { in_directory = ($0 == "  - name: " directory); in_file = 0 }
+    in_directory && /^      - name: / {
+      in_file = ($0 == "      - name: " filename)
+      if (in_file && required_mode == "") found = 1
+    }
+    in_file && $0 == "          mode: " required_mode { found = 1 }
+    END { exit !found }
+  ' "$artifacts/package-metadata.txt" || {
+    echo "Missing package file or incorrect permissions: $1/$2 ${3:-}" >&2
+    return 1
+  }
+}
+while read -r directory filename required_mode; do
+  require_package_file "$directory" "$filename" "$required_mode"
+done <<'EOF'
+etc/uci-defaults 30_luci-theme-sharp 0755
+etc/uci-defaults 31_luci-theme-sharp-languages
+lib/upgrade/keep.d luci-theme-sharp
+usr/lib/lua/luci/i18n sharp.zh-cn.lmo
+usr/share/luci/menu.d luci-theme-sharp.json
+usr/share/rpcd/acl.d luci-theme-sharp.json
+usr/share/ucode/luci/template/themes/sharp header.ut
+usr/share/ucode/luci/template/themes/sharp brand.ut
+usr/share/ucode/luci/template/themes/sharp sysauth.ut
+usr/share/ucode/luci/template/themes/sharp settings-main.ut
+www/cgi-bin sharp-wallpaper 0755
+www/luci-static/resources/sharp branding.js
+www/luci-static/resources/sharp login.js
+www/luci-static/resources/view/sharp basic.js
+www/luci-static/resources/view/sharp login.js
+www/luci-static/sharp sharp.js
+www/luci-static/sharp sharp.css
+www/luci-static/sharp login-background.svg
+EOF
+for dependency in luci-base wget-ssl ca-bundle jsonfilter; do
+  grep -Eq "^    - $dependency([<=>~].*)?$" "$artifacts/package-metadata.txt"
 done
 cp "$package" "$artifacts/"
 cd "$artifacts"

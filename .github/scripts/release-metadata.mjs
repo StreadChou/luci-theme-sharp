@@ -4,12 +4,14 @@ const read = file => readFile(new URL(`../../${file}`, import.meta.url), 'utf8')
 const pkg = JSON.parse(await read('package.json'));
 const lock = JSON.parse(await read('package-lock.json'));
 const makefile = await read('Makefile');
+const footer = await read('ucode/template/themes/sharp/footer.ut');
 const version = pkg.version;
 const match = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(alpha|beta|rc)\.([1-9]\d*))?$/.exec(version);
 if (!match) throw new Error('Use a version such as 0.1.0 or 0.2.0-beta.1.');
 if (makefile.match(/^PKG_VERSION:=(\S+)$/m)?.[1] !== version
-  || lock.version !== version || lock.packages[''].version !== version) {
-  throw new Error('Makefile, package.json and package-lock.json must have matching versions.');
+  || lock.version !== version || lock.packages[''].version !== version
+  || footer.match(/class="sharp-footer-version">([^<]+)</)?.[1] !== version) {
+  throw new Error('Makefile, package.json, package-lock.json and the footer must have matching versions.');
 }
 const revision = makefile.match(/^PKG_RELEASE:=([1-9]\d*)$/m)?.[1];
 if (!revision) throw new Error('PKG_RELEASE must be a positive integer.');

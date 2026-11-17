@@ -47,7 +47,7 @@ make package/luci-theme-sharp/compile V=s
 项目仓库为 [StreadChou/luci-theme-sharp](https://github.com/StreadChou/luci-theme-sharp)。工作流分为两部分：
 
 - [Check theme](../.github/workflows/check.yml)：推送到 `main` 或创建、更新 PR 时执行 `npm ci`、`npm run check`，检查生成文件是否已提交，并核对各处版本号。
-- [Release packages](../.github/workflows/release.yml)：推送 `v*` 标签时，先执行上述检查，再用官方 OpenWrt **25.12.5 x86/64 SDK** 编译架构无关的 APK，验证包版本、架构和关键资源，生成 SHA256 校验文件并发布 GitHub Release。
+- [Release packages](../.github/workflows/release.yml)：推送 `v*` 标签时，先执行上述检查，再用官方 OpenWrt **25.12.5 x86/64 SDK** 编译架构无关的 APK，验证包版本、架构、主题与设置资源、ACL 和备份文件、壁纸 CGI 可执行权限及运行依赖，生成 SHA256 校验文件并发布 GitHub Release。
 
 SDK 下载文件使用工作流内固定的 SHA256 校验，缓存仅用于减少重复下载。SDK 的默认 feeds 配置决定依赖来源。Actions 固定到具体提交，升级时应同时核对版本及来源。
 
@@ -55,7 +55,7 @@ SDK 下载文件使用工作流内固定的 SHA256 校验，缓存仅用于减�
 
 ### 发布步骤
 
-1. 更新 `package.json`、`package-lock.json` 中的版本以及 `Makefile` 的 `PKG_VERSION`，三处必须一致。`PKG_RELEASE` 为正整数软件包修订号；首次发布沿用现有 `0.1.0-r2`。
+1. 更新 `package.json`、`package-lock.json`、`Makefile` 的 `PKG_VERSION` 及 `footer.ut` 的显示版本，四处必须一致。`PKG_RELEASE` 为正整数软件包修订号；新版本从 `r1` 开始，同版本重新打包时递增。历史首版使用 `0.1.0-r2`。
 2. 新增 `docs/releases/v<版本>.md`，写明项目变化、适用环境、安装步骤和验证范围。首次发布介绍见 [v0.1.0](releases/v0.1.0.md)。
 3. 运行 `npm run check`，将源码、生成产物和发布说明一起提交并推送。
 4. 创建带说明的标签，并用维护者自己的 GitHub 凭据推送。例如，准备好 `0.2.0` 版本后执行：
