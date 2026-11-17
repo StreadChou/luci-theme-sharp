@@ -15,6 +15,21 @@ msgid "Appearance"
 msgstr "外观"
 
 msgctxt "sharp"
+msgid "Argon-like"
+msgstr "类argon"
+
+msgctxt "sharp"
+msgid "Automatic refresh paused; click to resume"
+msgstr "自动刷新已暂停，点击恢复"
+
+msgctxt "sharp"
+msgid "Automatically refreshing; click to pause"
+msgstr "自动刷新中，点击暂停"
+
+msgid "Basic settings"
+msgstr "基础设置"
+
+msgctxt "sharp"
 msgid "Close"
 msgstr "关闭"
 
@@ -25,6 +40,22 @@ msgstr "关闭搜索"
 msgctxt "sharp"
 msgid "Dark"
 msgstr "深色"
+
+msgctxt "sharp"
+msgid "Default"
+msgstr "默认"
+
+msgctxt "sharp"
+msgid "Default (OpenWrt-like)"
+msgstr "默认(类OpenWrt)"
+
+msgctxt "sharp"
+msgid "Desktop layout"
+msgstr "桌面端布局"
+
+msgctxt "sharp"
+msgid "Dismiss notification"
+msgstr "关闭提醒"
 
 msgctxt "sharp"
 msgid "Follow system"
@@ -39,12 +70,22 @@ msgid "Light"
 msgstr "浅色"
 
 msgctxt "sharp"
+msgid "Layout changes apply immediately and are saved in this browser."
+msgstr "布局切换立即生效，并保存在当前浏览器中。"
+
+msgctxt "sharp"
 msgid "Log in"
 msgstr "登录"
 
 msgctxt "sharp"
 msgid "Log out"
 msgstr "退出登录"
+
+msgid "Login interface"
+msgstr "登陆界面"
+
+msgid "Main interface"
+msgstr "主界面"
 
 msgctxt "sharp"
 msgid "Main menu"
@@ -53,6 +94,10 @@ msgstr "主菜单"
 msgctxt "sharp"
 msgid "Menu unavailable. Please refresh."
 msgstr "菜单加载失败，请刷新"
+
+msgctxt "sharp"
+msgid "Mobile layout"
+msgstr "手机端布局"
 
 msgctxt "sharp"
 msgid "Navigation"
@@ -81,18 +126,6 @@ msgstr "快速访问"
 msgctxt "sharp"
 msgid "Reboot router"
 msgstr "重启路由器"
-
-msgctxt "sharp"
-msgid "Refresh"
-msgstr "刷新"
-
-msgctxt "sharp"
-msgid "Refresh current page"
-msgstr "刷新当前页面"
-
-msgctxt "sharp"
-msgid "Refreshing discards unsaved input on this page. Continue?"
-msgstr "刷新会丢失当前页面尚未保存的输入。继续刷新？"
 
 msgctxt "sharp"
 msgid "Review pending changes"
@@ -151,6 +184,12 @@ msgstr "必须在浏览器中启用 JavaScript，LuCI 才能正常工作。"
 
 #, c-format
 msgctxt "sharp"
+msgid "You have %d unsaved configuration change"
+msgid_plural "You have %d unsaved configuration changes"
+msgstr[0] "你有 %d 项配置尚未保存"
+
+#, c-format
+msgctxt "sharp"
 msgid "%d menu result"
 msgid_plural "%d menu results"
 msgstr[0] "%d 个菜单结果"
@@ -160,3 +199,252 @@ msgctxt "sharp"
 msgid "%d pending configuration change; click to review"
 msgid_plural "%d pending configuration changes; click to review"
 msgstr[0] "%d 项配置尚未应用，点击查看"
+
+msgctxt "sharp"
+msgid "Choose a PNG, JPEG, GIF, WebP or SVG image."
+msgstr "请选择 PNG、JPEG、GIF、WebP 或 SVG 图片。"
+
+msgctxt "sharp"
+msgid "The image must be no larger than 2 MB."
+msgstr "图片大小不能超过 2 MB。"
+
+msgctxt "sharp"
+msgid "The image dimensions are too large."
+msgstr "图片尺寸过大，请选择较小的图片。"
+
+msgctxt "sharp"
+msgid "The image could not be processed."
+msgstr "无法处理图片，请选择其他图片。"
+
+msgctxt "sharp"
+msgid "The image could not be read. Please choose another file."
+msgstr "无法读取图片，请选择其他文件。"
+
+msgctxt "sharp"
+msgid "Customize the Logo and text used on the login page and in desktop and mobile headers."
+msgstr "设置登录页、桌面和手机页头使用的 Logo 和文本。"
+
+msgctxt "sharp"
+msgid "Logo and text"
+msgstr "Logo 与文本"
+
+msgctxt "sharp"
+msgid "The image could not be loaded. The default Logo is shown; check the path."
+msgstr "图片加载失败，已显示默认 Logo，请检查图片路径。"
+
+msgctxt "sharp"
+msgid "Preview"
+msgstr "预览"
+
+msgctxt "sharp"
+msgid "Upload Logo"
+msgstr "上传 Logo"
+
+msgctxt "sharp"
+msgid "Upload image…"
+msgstr "上传图片…"
+
+msgctxt "sharp"
+msgid "Uploading…"
+msgstr "正在上传…"
+
+msgctxt "sharp"
+msgid "The Logo could not be uploaded. Please try again."
+msgstr "Logo 上传失败，请重试。"
+
+msgctxt "sharp"
+msgid "Image uploaded. Save and apply to use this Logo."
+msgstr "图片已上传，保存并应用后使用此 Logo。"
+
+msgctxt "sharp"
+msgid "Logo image path"
+msgstr "Logo 图片路径"
+
+msgctxt "sharp"
+msgid "Upload an image up to 2 MB, or enter a local /luci-static/ or /www/luci-static/ image path. Leave empty to use the default Logo."
+msgstr "上传不超过 2 MB 的图片，或填写设备上 /luci-static/ 或 /www/luci-static/ 下的图片路径。留空使用默认 Logo。"
+
+msgctxt "sharp"
+msgid "Wait for the image upload to finish."
+msgstr "请等待图片上传完成。"
+
+msgctxt "sharp"
+msgid "Enter a local PNG, JPEG, GIF, WebP or SVG path under /luci-static/."
+msgstr "请填写 /luci-static/ 下的 PNG、JPEG、GIF、WebP 或 SVG 图片路径。"
+
+msgctxt "sharp"
+msgid "Brand text"
+msgstr "品牌文本"
+
+msgctxt "sharp"
+msgid "Up to 32 characters. Leave empty to use SHARP."
+msgstr "最多 32 个字符，留空使用 SHARP。"
+
+msgctxt "sharp"
+msgid "Use up to 32 characters without line breaks."
+msgstr "请使用不超过 32 个字符的单行文本。"
+
+msgctxt "sharp"
+msgid "Restore default Logo and text"
+msgstr "恢复默认 Logo 和文本"
+
+msgctxt "sharp"
+msgid "Changes take effect after Save & Apply and are shared by all browsers."
+msgstr "保存并应用后生效，所有浏览器共用此设置。"
+
+msgctxt "sharp"
+msgid "Customize the login layout and background. Save and apply, then reopen the login page to see your changes."
+msgstr "设置登录框布局和背景。保存并应用后，重新打开登录页即可查看效果。"
+
+msgctxt "sharp"
+msgid "Login appearance"
+msgstr "登录页外观"
+
+msgctxt "sharp"
+msgid "Preview follows the current light or dark appearance. Logo and text are configured in Basic settings."
+msgstr "预览跟随当前浅色或深色外观。Logo 和文本请在「基础设置」中调整。"
+
+msgctxt "sharp"
+msgid "Login panel layout"
+msgstr "登录框显示类型"
+
+msgctxt "sharp"
+msgid "Centered card (default)"
+msgstr "居中卡片（默认）"
+
+msgctxt "sharp"
+msgid "Classic sidebar"
+msgstr "经典侧栏"
+
+msgctxt "sharp"
+msgid "Background"
+msgstr "背景"
+
+msgctxt "sharp"
+msgid "Default background"
+msgstr "默认背景"
+
+msgctxt "sharp"
+msgid "Custom image"
+msgstr "自定义图片"
+
+msgctxt "sharp"
+msgid "Upload background"
+msgstr "上传背景图片"
+
+msgctxt "sharp"
+msgid "The background could not be uploaded. Please try again."
+msgstr "背景图片上传失败，请重试。"
+
+msgctxt "sharp"
+msgid "Image uploaded. Save and apply to use this background."
+msgstr "背景图片已上传，保存并应用后生效。"
+
+msgctxt "sharp"
+msgid "Background image path"
+msgstr "背景图片路径"
+
+msgctxt "sharp"
+msgid "Upload an image up to 10 MB, or enter a local /luci-static/ or /www/luci-static/ image path. Uploads become static JPEG images with a maximum edge of 2560 pixels."
+msgstr "上传不超过 10 MB 的图片，或填写设备上 /luci-static/ 或 /www/luci-static/ 下的图片路径。上传图片转换为最大边长 2560 像素的静态 JPEG。"
+
+msgctxt "sharp"
+msgid "Upload a background image or enter its local path."
+msgstr "请上传背景图片或填写本机图片路径。"
+
+msgctxt "sharp"
+msgid "Image fit"
+msgstr "图片显示方式"
+
+msgctxt "sharp"
+msgid "Fill screen (crop edges)"
+msgstr "铺满屏幕（裁剪边缘）"
+
+msgctxt "sharp"
+msgid "Show whole image"
+msgstr "完整显示图片"
+
+#, c-format
+msgctxt "sharp"
+msgid "Enter a whole number from 0 to %d."
+msgstr "请输入 0 到 %d 之间的整数。"
+
+msgctxt "sharp"
+msgid "Background dimming (%)"
+msgstr "背景暗化（%）"
+
+msgctxt "sharp"
+msgid "0 keeps the original brightness; 80 gives the darkest overlay."
+msgstr "0 保持图片原始亮度，80 表示最深的暗色遮罩。"
+
+msgctxt "sharp"
+msgid "Login panel opacity (%)"
+msgstr "登录框不透明度（%）"
+
+msgctxt "sharp"
+msgid "0 is transparent; 100 is opaque. Choose enough opacity to keep text readable."
+msgstr "0 为完全透明，100 为完全不透明；请保留足够的不透明度，确保文字清晰。"
+
+msgctxt "sharp"
+msgid "Login panel blur (px)"
+msgstr "登录框背景模糊（px）"
+
+msgctxt "sharp"
+msgid "Blur the background behind the login panel, from 0 to 30. Most visible with a translucent panel."
+msgstr "模糊登录框背后的背景，范围为 0～30；搭配半透明登录框效果更明显。"
+
+msgctxt "sharp"
+msgid "Restore default login appearance"
+msgstr "恢复默认登录页外观"
+
+msgctxt "sharp"
+msgid "The background could not be loaded. The default background is shown; check the path."
+msgstr "背景图片加载失败，已显示默认背景，请检查图片路径。"
+
+msgctxt "sharp"
+msgid "The background must be no larger than 10 MB."
+msgstr "背景图片大小不能超过 10 MB。"
+
+msgctxt "sharp"
+msgid "Built-in wallpaper (default)"
+msgstr "内置默认壁纸"
+
+msgctxt "sharp"
+msgid "Solid color"
+msgstr "纯色背景"
+
+msgctxt "sharp"
+msgid "Bing daily wallpaper"
+msgstr "必应每日壁纸"
+
+msgctxt "sharp"
+msgid "Wallhaven landscapes"
+msgstr "Wallhaven 风景图"
+
+msgctxt "sharp"
+msgid "Online wallpapers need internet access. If a provider is unavailable, the built-in wallpaper is used. Bing updates daily; Wallhaven selects a landscape every 12 hours."
+msgstr "在线壁纸需要联网，来源不可用时自动使用内置壁纸。必应每天更新，Wallhaven 每 12 小时随机选择一张风景图。"
+
+msgctxt "sharp"
+msgid "The background could not be loaded. The built-in wallpaper is shown."
+msgstr "背景加载失败，已显示内置默认壁纸。"
+
+msgctxt "sharp"
+msgid "Loading online wallpaper…"
+msgstr "正在加载在线壁纸…"
+
+msgctxt "sharp"
+msgid "Control panel"
+msgstr "控制面板"
+
+msgctxt "sharp"
+msgid "Welcome back"
+msgstr "欢迎回来"
+
+msgctxt "sharp"
+msgid "Show password"
+msgstr "显示密码"
+
+msgctxt "sharp"
+msgid "Hide password"
+msgstr "隐藏密码"

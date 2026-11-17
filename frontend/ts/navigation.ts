@@ -2,6 +2,7 @@ import { t } from './i18n';
 import { bindPopover, element } from './dom';
 import { icon, type IconName } from './icons';
 import { bindDisclosure } from './motion';
+import { initSidebar } from './sidebar';
 
 export interface SearchEntry { title: string; group: string; url: string }
 
@@ -14,6 +15,7 @@ export function initNavigation(ui: LuCIUI, tree: LuCIMenuNode): SearchEntry[] {
   const route = L.env.dispatchpath;
   const entries: SearchEntry[] = [];
   const groups = ui.menu.getChildren(admin).filter(node => node.name !== 'logout');
+  initSidebar(ui, groups, route);
   groups.forEach(group => {
     const title = _(group.title);
     const items = ui.menu.getChildren(group);

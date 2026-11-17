@@ -29,7 +29,8 @@ async function filesIn(directory) {
 export async function translationInputs() {
   return [...await filesIn(poRoot), ...await filesIn(vendor),
     ...await filesIn(path.join(root, 'ucode/template/themes/sharp')),
-    ...await filesIn(path.join(root, 'root/usr/share/luci/menu.d'))]
+    ...await filesIn(path.join(root, 'root/usr/share/luci/menu.d')),
+    ...await filesIn(path.join(root, 'htdocs/luci-static/resources'))]
     .filter(file => !file.endsWith('.pot') && !file.endsWith('.tmp'));
 }
 
@@ -42,8 +43,8 @@ async function extractMessages() {
     entry.refs.add(`${path.relative(root, file).split(path.sep).join('/')}:${line}`);
     messages.set(key, entry);
   };
-  for (const file of await filesIn(path.join(root, 'frontend/ts'))) {
-    if (!file.endsWith('.ts') || file.endsWith('.d.ts')) continue;
+  for (const file of [...await filesIn(path.join(root, 'frontend/ts')), ...await filesIn(path.join(root, 'htdocs/luci-static/resources'))]) {
+    if ((!file.endsWith('.ts') && !file.endsWith('.js')) || file.endsWith('.d.ts')) continue;
     const source = ts.createSourceFile(file, await readFile(file, 'utf8'), ts.ScriptTarget.Latest, true);
     const visit = node => {
       if (ts.isCallExpression(node)) {

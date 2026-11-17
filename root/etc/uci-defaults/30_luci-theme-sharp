@@ -1,4 +1,5 @@
 #!/bin/sh
+mkdir -p /www/luci-static/sharp-custom
 uci -q batch <<'EOF'
 set luci.themes.Sharp=/luci-static/sharp
 set luci.main.mediaurlbase=/luci-static/sharp

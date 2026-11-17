@@ -3,8 +3,41 @@
     "title": "Sharp theme settings",
     "order": 90,
     "action": {
+      "type": "firstchild"
+    }
+  },
+  "admin/system/sharp/basic": {
+    "title": "Basic settings",
+    "order": 10,
+    "action": {
+      "type": "view",
+      "path": "sharp/basic"
+    },
+    "depends": {
+      "acl": [
+        "luci-theme-sharp"
+      ]
+    }
+  },
+  "admin/system/sharp/login": {
+    "title": "Login interface",
+    "order": 20,
+    "action": {
+      "type": "view",
+      "path": "sharp/login"
+    },
+    "depends": {
+      "acl": [
+        "luci-theme-sharp"
+      ]
+    }
+  },
+  "admin/system/sharp/main": {
+    "title": "Main interface",
+    "order": 30,
+    "action": {
       "type": "template",
-      "path": "themes/sharp/settings"
+      "path": "themes/sharp/settings-main"
     }
   }
 }

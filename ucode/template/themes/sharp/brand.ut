@@ -1,0 +1,16 @@
+{%
+    import { cursor } from 'uci';
+    import { stat } from 'fs';
+    const branding_uci = cursor();
+    const text_option = branding_uci.get('luci', 'sharp', 'brand_text');
+    const logo_option = branding_uci.get('luci', 'sharp', 'brand_logo');
+    const brand_text = type(text_option) == 'string' && length(trim(text_option)) ? trim(text_option) : 'SHARP';
+    let brand_logo = type(logo_option) == 'string' ? trim(logo_option) : '';
+    brand_logo = replace(brand_logo, /^\/www\/luci-static\//, '/luci-static/');
+    if (!match(brand_logo, /^\/luci-static\//) || match(brand_logo, /[[:cntrl:][:space:]\\<>"'?#%]/)
+        || match(brand_logo, /\/\.{1,2}(\/|$)/) || !match(brand_logo, /\.(png|jpe?g|gif|webp|svg)$/i)
+        || stat('/www' + brand_logo)?.type != 'file')
+        brand_logo = media + '/logo.svg';
+%}
+<img src="{{ entityencode(brand_logo, true) }}" width="28" height="28" alt="" data-sharp-brand-logo data-sharp-brand-fallback="{{ media }}/logo.svg">
+<span title="{{ entityencode(brand_text, true) }}">{{ entityencode(brand_text, true) }}</span>

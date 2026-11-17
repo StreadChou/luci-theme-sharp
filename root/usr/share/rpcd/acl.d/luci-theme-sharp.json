@@ -1,0 +1,26 @@
+{
+  "luci-theme-sharp": {
+    "description": "Manage Sharp branding and login appearance",
+    "read": {
+      "uci": [
+        "luci"
+      ]
+    },
+    "write": {
+      "uci": [
+        "luci"
+      ],
+      "cgi-io": [
+        "upload"
+      ],
+      "file": {
+        "/www/luci-static/sharp-custom/logo-*.png": [
+          "write"
+        ],
+        "/www/luci-static/sharp-custom/background-*.jpg": [
+          "write"
+        ]
+      }
+    }
+  }
+}

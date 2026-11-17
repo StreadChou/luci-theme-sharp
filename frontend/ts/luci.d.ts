@@ -13,6 +13,7 @@ interface LuCIUI {
     getChildren(node: LuCIMenuNode): Array<LuCIMenuNode & { name: string; title: string }>;
   };
   changes: {
+    init?: () => Promise<unknown> | unknown;
     changes?: Record<string, unknown[]>;
     displayChanges(): void;
   };

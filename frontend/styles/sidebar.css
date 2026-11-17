@@ -1,0 +1,52 @@
+.sharp-workspace { display: flex; flex: 1; min-width: 0; }
+.sharp-workspace-content { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.sharp-sidebar { display: none; }
+
+@media (min-width: 901px) {
+  :root[data-sharp-desktop-layout='argon'] {
+    --sharp-header-height: 56px;
+    --sharp-shell-header-height: var(--sharp-header-height);
+    scroll-padding-top: calc(var(--sharp-shell-header-height) + 16px);
+  }
+  :root[data-sharp-desktop-layout='argon'] .sharp-header { position: sticky; top: 0; }
+  :root[data-sharp-desktop-layout='argon'] .sharp-nav { display: none; }
+  :root[data-sharp-desktop-layout='argon'] .sharp-workspace { display: grid; grid-template-columns: var(--sharp-sidebar-width) minmax(0, 1fr); }
+  :root[data-sharp-desktop-layout='argon'] .sharp-sidebar {
+    display: grid; grid-template-columns: var(--sharp-sidebar-rail-width) minmax(0, 1fr);
+    position: sticky; top: var(--sharp-shell-header-height); align-self: start;
+    height: calc(100dvh - var(--sharp-shell-header-height)); min-height: 0; min-width: 0;
+    background: var(--sharp-surface); border-right: 1px solid var(--sharp-border);
+  }
+  .sharp-sidebar-primary, .sharp-sidebar-secondary { min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .sharp-sidebar-primary { padding: 12px 6px; background: var(--sharp-canvas); border-right: 1px solid var(--sharp-border); }
+  .sharp-sidebar-group { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 76px; padding: 12px 4px; color: var(--sharp-muted); background: none; border: 0; border-radius: 0; font-size: 12px; line-height: 1.4; }
+  .sharp-sidebar-group + .sharp-sidebar-group { margin-top: 4px; }
+  .sharp-sidebar-group > svg { width: 22px; height: 22px; flex-shrink: 0; }
+  .sharp-sidebar-group > span { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+  .sharp-sidebar-group:hover { color: var(--sharp-text); background: var(--sharp-subtle); }
+  .sharp-sidebar-group[aria-expanded='true'] { color: var(--sharp-accent); background: var(--sharp-accent-soft); box-shadow: inset 2px 0 var(--sharp-accent); }
+  .sharp-sidebar-group:focus-visible, .sharp-sidebar-links .sharp-menu-item:focus-visible { outline-offset: -2px; }
+  .sharp-sidebar-links { display: flex; flex-direction: column; gap: 4px; padding: 16px 10px; }
+  .sharp-sidebar-links .sharp-menu-item { min-height: 44px; padding: 11px 12px; border-left: 2px solid transparent; }
+  .sharp-sidebar-links .sharp-menu-item.is-active { border-left-color: var(--sharp-accent); }
+
+  /* Argon keeps the current page's third-level tabs in a full-width strip
+   * directly below the header. Keep the page content width and flow intact. */
+  :root[data-sharp-desktop-layout='argon'] .sharp-main > #tabmenu:not([hidden]) {
+    position: relative;
+    left: 50%;
+    /* Use the content column's actual width, excluding page scrollbars. */
+    width: var(--sharp-workspace-width, 100%);
+    max-width: none;
+    background: var(--sharp-surface);
+    border-bottom: 1px solid var(--sharp-border);
+    transform: translate(-50%, -28px);
+  }
+  :root[data-sharp-desktop-layout='argon'] .sharp-main > #tabmenu > #sharp-breadcrumb { display: none; }
+  :root[data-sharp-desktop-layout='argon'] .sharp-main > #tabmenu > .tabs {
+    width: min(100%, 1480px);
+    margin: 0 auto;
+    padding-inline: 40px;
+    border-bottom: 0;
+  }
+}

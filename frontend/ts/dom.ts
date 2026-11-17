@@ -9,7 +9,7 @@ export function element<K extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
-interface Popover { trigger: HTMLButtonElement; panel: HTMLElement; closing: boolean }
+interface Popover { trigger: HTMLButtonElement; panel: HTMLElement; closing: boolean; toggleTrigger: boolean }
 let current: Popover | undefined;
 
 function fitPopover(panel: HTMLElement): void {
@@ -32,7 +32,7 @@ export function closePopover(restoreFocus = false, immediate = false): void {
   const popover = current;
   if (!popover || (popover.closing && !immediate)) return;
   popover.closing = true;
-  popover.trigger.setAttribute('aria-expanded', 'false');
+  if (popover.toggleTrigger) popover.trigger.setAttribute('aria-expanded', 'false');
   if (restoreFocus) popover.trigger.focus({ preventScroll: true });
   popover.panel.inert = true;
   animatePanel(popover.panel, false, () => {
@@ -42,25 +42,33 @@ export function closePopover(restoreFocus = false, immediate = false): void {
   }, immediate);
 }
 
-export function bindPopover(trigger: HTMLButtonElement, panel: HTMLElement): void {
+export function bindPopover(
+  trigger: HTMLButtonElement, panel: HTMLElement, options: { toggleTrigger?: boolean } = {}
+): { open: () => void; close: (restoreFocus?: boolean, immediate?: boolean) => void } {
+  const toggleTrigger = options.toggleTrigger !== false;
   const open = (): void => {
     if (current?.panel === panel && !current.closing) return;
-    if (current?.panel !== panel) closePopover(false, true);
+    if (current?.panel !== panel) {
+      // An automatic notice may replace a menu that still has keyboard focus.
+      closePopover(current?.panel.contains(document.activeElement), true);
+    }
     panel.hidden = false;
     panel.inert = false;
     fitPopover(panel);
-    trigger.setAttribute('aria-expanded', 'true');
-    current = { trigger, panel, closing: false };
+    if (toggleTrigger) trigger.setAttribute('aria-expanded', 'true');
+    current = { trigger, panel, closing: false, toggleTrigger };
     animatePanel(panel, true);
   };
-  trigger.addEventListener('click', () => current?.panel === panel && !current.closing ? closePopover() : open());
-  trigger.addEventListener('keydown', event => {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      open();
-      panel.querySelector<HTMLElement>('a, button')?.focus();
-    }
-  });
+  if (toggleTrigger) {
+    trigger.addEventListener('click', () => current?.panel === panel && !current.closing ? closePopover() : open());
+    trigger.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        open();
+        panel.querySelector<HTMLElement>('a, button')?.focus();
+      }
+    });
+  }
   panel.addEventListener('keydown', event => {
     const items = [...panel.querySelectorAll<HTMLElement>('a, button:not(:disabled)')];
     const index = items.indexOf(document.activeElement as HTMLElement);
@@ -69,6 +77,12 @@ export function bindPopover(trigger: HTMLButtonElement, panel: HTMLElement): voi
       : event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : -1;
     if (next >= 0) { event.preventDefault(); items[next]?.focus(); }
   });
+  return {
+    open,
+    close: (restoreFocus = false, immediate = false) => {
+      if (current?.panel === panel) closePopover(restoreFocus, immediate);
+    }
+  };
 }
 
 export function bindPopoverDismissal(): void {
@@ -84,7 +98,10 @@ export function bindPopoverDismissal(): void {
     if (current && !current.panel.contains(event.target as Node) && !current.trigger.contains(event.target as Node)) closePopover();
   });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') closePopover(true);
+    if (event.key === 'Escape' && current) {
+      const focusInside = current.panel.contains(document.activeElement) || current.trigger === document.activeElement;
+      closePopover(focusInside);
+    }
   });
   document.addEventListener('focusin', event => {
     if (current && !current.panel.contains(event.target as Node) && !current.trigger.contains(event.target as Node)) closePopover();

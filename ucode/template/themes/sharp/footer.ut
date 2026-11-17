@@ -1,5 +1,12 @@
+{%
+    import { stat } from 'fs';
+    const script = stat('/www' + media + '/sharp.js');
+    const asset_version = script ? sprintf('%d-%d', script.mtime, script.size) : '0';
+%}
     </main>
     <footer class="sharp-footer"><span>SHARP <span class="sharp-footer-version">0.1</span></span><span>{{ version.distname }} {{ version.distversion }} · LuCI</span></footer>
-    <script src="{{ media }}/sharp.js" defer></script>
+        </div>
+    </div>
+    <script src="{{ media }}/sharp.js?v={{ asset_version }}" defer></script>
 </body>
 </html>

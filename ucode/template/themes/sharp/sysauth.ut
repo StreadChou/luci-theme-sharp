@@ -1,19 +1,71 @@
 {%
+    import { cursor } from 'uci';
+    import { stat } from 'fs';
+    const login_uci = cursor();
+    const login_layout = login_uci.get('luci', 'sharp', 'login_layout') == 'sidebar' ? 'sidebar' : 'centered';
+    const login_fit = login_uci.get('luci', 'sharp', 'login_background_fit') == 'contain' ? 'contain' : 'cover';
+    function login_number(name, max, fallback) {
+        const value = login_uci.get('luci', 'sharp', name);
+        return type(value) == 'string' && match(value, /^[0-9]+$/) && +value <= max ? +value : fallback;
+    }
+    const login_opacity = login_number('login_panel_opacity', 100, 100);
+    const login_blur = login_number('login_panel_blur', 30, 0);
+    const login_dim = login_number('login_background_dim', 80, 20);
+    const configured_source = login_uci.get('luci', 'sharp', 'login_background');
+    const login_source = index(['default', 'plain', 'bing', 'wallhaven', 'image'], configured_source) >= 0 ? configured_source : 'default';
+    const login_default_image = media + '/login-background.svg';
+    const login_wallpaper_endpoint = replace(http.getenv('SCRIPT_NAME') ?? '/cgi-bin/luci', /\/[^/]*$/, '/sharp-wallpaper');
+    const configured_image = login_uci.get('luci', 'sharp', 'login_background_image');
+    let login_image = type(configured_image) == 'string' ? trim(configured_image) : '';
+    login_image = replace(login_image, /^\/www\/luci-static\//, '/luci-static/');
+    if (login_source != 'image'
+        || !match(login_image, /^\/luci-static\//) || match(login_image, /[[:cntrl:][:space:]\\<>"'?#%]/)
+        || match(login_image, /\/\.{1,2}(\/|$)/) || !match(login_image, /\.(png|jpe?g|gif|webp|svg)$/i)
+        || stat('/www' + login_image)?.type != 'file')
+        login_image = '';
+    const login_script = stat('/www' + media + '/sharp.js');
+    const login_asset_version = login_script ? sprintf('%d-%d', login_script.mtime, login_script.size) : '0';
     const hostname = striptags(ubus.call('system', 'board')?.hostname ?? 'OpenWrt');
     include('themes/sharp/head', { hostname, is_login: true });
 %}
-<body class="sharp sharp-auth">
-    <main class="sharp-login">
-        <a class="sharp-brand" href="{{ dispatcher.build_url() }}"><img src="{{ media }}/logo.svg" width="30" height="30" alt=""><span>SHARP</span></a>
-        <div class="sharp-login-heading"><span class="sharp-eyebrow">{{ _('OpenWrt control panel', 'sharp') }}</span><h1>{{ _('Log in', 'sharp') }}</h1><p>{{ hostname }}</p></div>
-        <form method="post" action="{{ entityencode(http.getenv('REQUEST_URI'), true) }}">
+<body class="sharp sharp-auth" data-login-layout="{{ login_layout }}" data-login-fit="{{ login_fit }}" data-has-background="{{ login_source == 'plain' ? 'false' : 'true' }}"
+    style="--sharp-login-opacity: {{ login_opacity }}%; --sharp-login-blur: {{ login_blur }}px; --sharp-login-dim: {{ login_dim }}%">
+    {% if (login_source != 'plain'): %}<div class="sharp-login-backdrop" aria-hidden="true">
+        <img src="{{ login_default_image }}" alt="">
+        <img src="{{ entityencode(login_image || login_default_image, true) }}" alt="" data-sharp-login-background
+            data-wallpaper-source="{{ login_source }}" data-wallpaper-endpoint="{{ entityencode(login_wallpaper_endpoint, true) }}">
+        <div class="sharp-login-shade"></div>
+    </div>{% endif %}
+    <main class="sharp-login" aria-labelledby="sharp-login-title">
+        <header class="sharp-login-header">
+            <a class="sharp-brand" href="{{ dispatcher.build_url() }}">{% include('themes/sharp/brand') %}</a>
+            <span class="sharp-login-context">{{ _('Control panel', 'sharp') }}</span>
+        </header>
+        <div class="sharp-login-heading">
+            <h1 id="sharp-login-title">{{ _('Welcome back', 'sharp') }}</h1>
+            <p class="sharp-login-device"><span data-sharp-icon="monitor" aria-hidden="true"></span><span>{{ hostname }}</span></p>
+        </div>
+        <form id="sharp-login-form" method="post" action="{{ entityencode(http.getenv('REQUEST_URI'), true) }}">
             {% if (fuser && !auth_plugin): %}<div class="alert-message error">{{ _('Invalid username and/or password! Please try again.', 'sharp') }}</div>{% endif %}
             {% if (auth_message): %}<div class="alert-message warning">{{ entityencode(auth_message, true) }}</div>{% endif %}
-            <label for="sharp-username">{{ _('Username', 'sharp') }}</label>
-            <input id="sharp-username" name="luci_username" type="text" value="{{ entityencode(duser ?? 'root', true) }}" autocomplete="username" autocapitalize="none">
-            <label for="sharp-password">{{ _('Password', 'sharp') }}</label>
-            <input id="sharp-password" name="luci_password" type="password" autocomplete="current-password" autofocus>
+            <div class="sharp-login-field">
+                <label for="sharp-username">{{ _('Username', 'sharp') }}</label>
+                <div class="sharp-login-control">
+                    <span data-sharp-icon="user" aria-hidden="true"></span>
+                    <input id="sharp-username" name="luci_username" type="text" value="{{ entityencode(duser ?? 'root', true) }}" autocomplete="username" autocapitalize="none" spellcheck="false">
+                </div>
+            </div>
+            <div class="sharp-login-field">
+                <label for="sharp-password">{{ _('Password', 'sharp') }}</label>
+                <div class="sharp-login-control">
+                    <span data-sharp-icon="password" aria-hidden="true"></span>
+                    <input id="sharp-password" name="luci_password" type="password" autocomplete="current-password" autofocus>
+                    <button type="button" class="sharp-login-password-toggle" aria-controls="sharp-password" aria-label="{{ _('Show password', 'sharp') }}"
+                        data-show-label="{{ _('Show password', 'sharp') }}" data-hide-label="{{ _('Hide password', 'sharp') }}" hidden><span data-sharp-icon="eye" aria-hidden="true"></span></button>
+                </div>
+            </div>
             {% for (let field in auth_fields ?? []): %}
+            <div class="sharp-login-field">
             <label for="{{ entityencode(field.name, true) }}">{{ _(field.label ?? field.name) }}</label>
             <input id="{{ entityencode(field.name, true) }}" name="{{ entityencode(field.name, true) }}" type="{{ entityencode(field.type ?? 'text', true) }}"
                 {% if (field.placeholder): %} placeholder="{{ entityencode(field.placeholder, true) }}"{% endif %}
@@ -22,13 +74,14 @@
                 {% if (field.maxlength): %} maxlength="{{ entityencode(field.maxlength, true) }}"{% endif %}
                 {% if (field.autocomplete): %} autocomplete="{{ entityencode(field.autocomplete, true) }}"{% endif %}
                 {% if (field.required): %} required{% endif %}>
+            </div>
             {% endfor %}
-            {% if (auth_html): %}<div>{{ auth_html }}</div>{% endif %}
-            <button type="submit" class="cbi-button cbi-button-apply">{{ _('Log in', 'sharp') }} <span aria-hidden="true">→</span></button>
+            {% if (auth_html): %}<div class="sharp-login-auth-plugin">{{ auth_html }}</div>{% endif %}
+            <button type="submit" class="sharp-login-submit cbi-button cbi-button-apply"><span>{{ _('Log in', 'sharp') }}</span><span data-sharp-icon="arrow" aria-hidden="true"></span></button>
             {% for (let asset in auth_assets ?? []): %}{% if (asset.type == 'script'): %}<script src="{{ asset.src }}"></script>{% endif %}{% endfor %}
         </form>
-        <div class="sharp-login-foot"><span>{{ version.distname }} {{ version.distversion }}</span><span>SHARP / 0.1</span></div>
+        <footer class="sharp-login-foot"><span>{{ version.distname }} {{ version.distversion }}</span><span>LuCI · Sharp</span></footer>
     </main>
-    <script src="{{ media }}/sharp.js" defer></script>
+    <script src="{{ media }}/sharp.js?v={{ login_asset_version }}" defer></script>
 </body>
 </html>

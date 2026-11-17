@@ -1,12 +1,12 @@
 /* Motion is limited to theme controls and known LuCI surfaces. */
 :where(html, body.sharp, .sharp-header, .sharp-popover, .sharp-dialog, .sharp-login,
   .sharp-footer, .sharp-dialog-heading, .sharp-drawer-footer, .sharp-settings-section,
-  .sharp-mobile-group, .sharp-user-info, .sharp-search-field, #sharp-breadcrumb),
+  .sharp-mobile-group, .sharp-user-info, .sharp-search-field, .sharp-sidebar, .sharp-sidebar-primary, #sharp-breadcrumb),
 :where(#maincontent, #modal_overlay) :where(.cbi-section, .cbi-value, .modal, .tabs, .cbi-tabmenu, pre, th, td) {
   transition: background-color var(--sharp-motion-enter), color var(--sharp-motion-enter), border-color var(--sharp-motion-enter), box-shadow var(--sharp-motion-enter);
 }
 :where(.sharp-nav-button, .sharp-icon-button, .sharp-avatar, .sharp-menu-item,
-  .sharp-search-trigger, .sharp-search-result, .sharp-mobile-category, .sharp-appearance-option, .sharp-pending),
+  .sharp-search-trigger, .sharp-search-result, .sharp-mobile-category, .sharp-appearance-option, .sharp-sidebar-group, .sharp-pending),
 :where(#maincontent, #modal_overlay, .sharp-login) :where(.cbi-button, .btn, input, select, textarea),
 :where(#maincontent) :where(.tabs, .cbi-tabmenu) > li > :is(a, .sharp-tab-label) {
   transition: background-color var(--sharp-motion-fast), color var(--sharp-motion-fast), border-color var(--sharp-motion-fast), box-shadow var(--sharp-motion-fast);

@@ -104,7 +104,7 @@
     const popover = current;
     if (!popover || popover.closing && !immediate) return;
     popover.closing = true;
-    popover.trigger.setAttribute("aria-expanded", "false");
+    if (popover.toggleTrigger) popover.trigger.setAttribute("aria-expanded", "false");
     if (restoreFocus) popover.trigger.focus({ preventScroll: true });
     popover.panel.inert = true;
     animatePanel(popover.panel, false, () => {
@@ -113,25 +113,30 @@
       if (current === popover) current = void 0;
     }, immediate);
   }
-  function bindPopover(trigger, panel) {
+  function bindPopover(trigger, panel, options = {}) {
+    const toggleTrigger = options.toggleTrigger !== false;
     const open = () => {
       if (current?.panel === panel && !current.closing) return;
-      if (current?.panel !== panel) closePopover(false, true);
+      if (current?.panel !== panel) {
+        closePopover(current?.panel.contains(document.activeElement), true);
+      }
       panel.hidden = false;
       panel.inert = false;
       fitPopover(panel);
-      trigger.setAttribute("aria-expanded", "true");
-      current = { trigger, panel, closing: false };
+      if (toggleTrigger) trigger.setAttribute("aria-expanded", "true");
+      current = { trigger, panel, closing: false, toggleTrigger };
       animatePanel(panel, true);
     };
-    trigger.addEventListener("click", () => current?.panel === panel && !current.closing ? closePopover() : open());
-    trigger.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
-        open();
-        panel.querySelector("a, button")?.focus();
-      }
-    });
+    if (toggleTrigger) {
+      trigger.addEventListener("click", () => current?.panel === panel && !current.closing ? closePopover() : open());
+      trigger.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          open();
+          panel.querySelector("a, button")?.focus();
+        }
+      });
+    }
     panel.addEventListener("keydown", (event) => {
       const items = [...panel.querySelectorAll("a, button:not(:disabled)")];
       const index = items.indexOf(document.activeElement);
@@ -141,6 +146,12 @@
         items[next]?.focus();
       }
     });
+    return {
+      open,
+      close: (restoreFocus = false, immediate = false) => {
+        if (current?.panel === panel) closePopover(restoreFocus, immediate);
+      }
+    };
   }
   function bindPopoverDismissal() {
     const reposition = () => {
@@ -155,7 +166,10 @@
       if (current && !current.panel.contains(event.target) && !current.trigger.contains(event.target)) closePopover();
     });
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closePopover(true);
+      if (event.key === "Escape" && current) {
+        const focusInside = current.panel.contains(document.activeElement) || current.trigger === document.activeElement;
+        closePopover(focusInside);
+      }
     });
     document.addEventListener("focusin", (event) => {
       if (current && !current.panel.contains(event.target) && !current.trigger.contains(event.target)) closePopover();
@@ -169,14 +183,24 @@
     changes: '<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h4"/>',
     search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/>',
     refresh: '<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 6.1A8 8 0 0 1 19.8 11M4.2 13a8 8 0 0 0 13.7 4.9"/>',
+    pause: '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/>',
     moon: '<path d="M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z"/>',
     monitor: '<rect x="3" y="4" width="18" height="13"/><path d="M8 21h8m-4-4v4"/>',
+    dashboard: '<path d="M4 19a10 10 0 1 1 16 0ZM12 14l5-5M5 12h2m10 0h2M12 4v2"/><circle cx="12" cy="14" r="1"/>',
+    network: '<rect x="9" y="3" width="6" height="5"/><rect x="2" y="16" width="6" height="5"/><rect x="16" y="16" width="6" height="5"/><path d="M12 8v4M5 16v-4h14v4"/>',
+    grid: '<path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>',
+    shield: '<path d="m12 2 8 3v6c0 5-4 9-8 11-4-2-8-6-8-11V5Z"/><path d="m8 12 3 3 5-6"/>',
+    storage: '<rect x="3" y="3" width="18" height="7"/><rect x="3" y="14" width="18" height="7"/><path d="M6 6.5h1m-1 11h1M11 6.5h7m-7 11h7"/>',
+    chart: '<path d="M3 3v18h18M7 17v-5m5 5V8m5 9V4"/>',
     chevron: '<path d="m8 10 4 4 4-4"/>',
     arrow: '<path d="M5 12h14m-5-5 5 5-5 5"/>',
     check: '<path d="m5 12 4 4L19 6"/>',
     close: '<path d="m6 6 12 12M18 6 6 18"/>',
     password: '<rect x="5" y="10" width="14" height="11"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+    "eye-off": '<path d="m3 3 18 18M10.6 5.1 12 5c6.5 0 10 7 10 7a20 20 0 0 1-3 3.8M6.2 6.2A20 20 0 0 0 2 12s3.5 7 10 7a12 12 0 0 0 5.8-1.8M10 10a3 3 0 0 0 4 4"/>',
     reboot: '<path d="M12 2v10m-5-8a9 9 0 1 0 10 0"/>',
     logout: '<path d="M10 4H4v16h6m4-13 5 5-5 5m-6-5h11"/>'
   };
@@ -273,6 +297,137 @@
     apply();
   }
 
+  // frontend/ts/desktop-layout.ts
+  var key2 = "sharp:desktop-layout";
+  var normalize = (value) => value === "argon" ? "argon" : "default";
+  function initDesktopLayout() {
+    const header = document.querySelector("#sharp-header");
+    if (!header) return;
+    const workspace = document.querySelector(".sharp-workspace-content");
+    const root = document.documentElement;
+    const controls = document.querySelectorAll('input[name="sharp-desktop-layout"]');
+    const mobile = matchMedia("(max-width: 900px)");
+    let navigationFocus;
+    document.addEventListener("focusin", (event) => {
+      const target = event.target;
+      if (target instanceof HTMLElement && target !== document.body) {
+        navigationFocus = target.closest("#sharp-nav, #sharp-sidebar") ? target : void 0;
+      }
+    });
+    const restoreVisibleFocus = () => {
+      const active = document.activeElement === document.body ? navigationFocus : document.activeElement;
+      if (active instanceof HTMLElement && active.closest("#sharp-nav, #sharp-sidebar") && !active.getClientRects().length) {
+        const target = mobile.matches ? document.querySelector("#sharp-mobile-menu-toggle") : header.querySelector(".sharp-brand");
+        target?.focus({ preventScroll: true });
+      }
+    };
+    const apply = (layout) => {
+      if (root.dataset.sharpDesktopLayout !== layout) closePopover(false, true);
+      root.dataset.sharpDesktopLayout = layout;
+      controls.forEach((input) => {
+        input.checked = input.value === layout;
+      });
+      restoreVisibleFocus();
+    };
+    controls.forEach((input) => input.addEventListener("change", () => {
+      if (!input.checked) return;
+      const layout = normalize(input.value);
+      try {
+        localStorage.setItem(key2, layout);
+      } catch {
+      }
+      apply(layout);
+    }));
+    window.addEventListener("storage", (event) => {
+      if (event.storageArea === localStorage && (event.key === key2 || event.key === null)) apply(normalize(event.newValue));
+    });
+    window.addEventListener("pageshow", () => {
+      try {
+        apply(normalize(localStorage.getItem(key2)));
+      } catch {
+      }
+    });
+    mobile.addEventListener("change", restoreVisibleFocus);
+    const sizes = new ResizeObserver(() => {
+      const height = `${header.getBoundingClientRect().height}px`;
+      if (root.style.getPropertyValue("--sharp-shell-header-height") !== height) root.style.setProperty("--sharp-shell-header-height", height);
+      if (workspace) {
+        const width = `${workspace.getBoundingClientRect().width}px`;
+        if (workspace.style.getPropertyValue("--sharp-workspace-width") !== width) workspace.style.setProperty("--sharp-workspace-width", width);
+      }
+    });
+    sizes.observe(header);
+    if (workspace) sizes.observe(workspace);
+    apply(normalize(root.dataset.sharpDesktopLayout));
+  }
+
+  // frontend/ts/sidebar.ts
+  var groupIcons = {
+    status: "dashboard",
+    system: "settings",
+    network: "network",
+    services: "grid",
+    vpn: "shield",
+    nas: "storage",
+    statistics: "chart"
+  };
+  function initSidebar(ui, groups, route) {
+    const primary = document.querySelector("#sharp-sidebar-primary");
+    const secondary = document.querySelector("#sharp-sidebar-secondary");
+    if (!primary || !secondary) return;
+    const entries = [];
+    const select = (index) => {
+      entries.forEach(({ button, panel }, position) => {
+        button.setAttribute("aria-expanded", String(position === index));
+        panel.hidden = position !== index;
+      });
+    };
+    groups.forEach((group, index) => {
+      const button = element("button", "sharp-sidebar-group");
+      button.type = "button";
+      button.id = `sharp-sidebar-group-${group.name}`;
+      const groupIcon = Object.hasOwn(groupIcons, group.name) ? groupIcons[group.name] : "grid";
+      button.append(icon(groupIcon), element("span", "", _(group.title)));
+      const panel = element("nav", "sharp-sidebar-links");
+      panel.id = `sharp-sidebar-links-${group.name}`;
+      panel.setAttribute("aria-labelledby", button.id);
+      button.setAttribute("aria-controls", panel.id);
+      panel.hidden = true;
+      const children = ui.menu.getChildren(group);
+      const items = children.length ? children : [group];
+      items.forEach((item) => {
+        const selected = route[1] === group.name && (!children.length || route[2] === item.name);
+        const link = element("a", `sharp-menu-item${selected ? " is-active" : ""}`, _(item.title));
+        link.href = children.length ? L.url("admin", group.name, item.name) : L.url("admin", group.name);
+        if (selected) link.setAttribute("aria-current", "page");
+        panel.append(link);
+      });
+      button.addEventListener("click", () => select(index));
+      button.addEventListener("keydown", (event) => {
+        const next = event.key === "ArrowDown" ? (index + 1) % entries.length : event.key === "ArrowUp" ? (index - 1 + entries.length) % entries.length : event.key === "Home" ? 0 : event.key === "End" ? entries.length - 1 : -1;
+        if (next >= 0) {
+          event.preventDefault();
+          select(next);
+          entries[next]?.button.focus();
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          select(index);
+          panel.querySelector("a")?.focus();
+        }
+      });
+      panel.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft" || event.key === "Escape") {
+          event.preventDefault();
+          button.focus();
+        }
+      });
+      entries.push({ button, panel });
+      primary.append(button);
+      secondary.append(panel);
+    });
+    select(Math.max(0, groups.findIndex((group) => group.name === route[1])));
+  }
+
   // frontend/ts/navigation.ts
   function initNavigation(ui, tree) {
     const nav = document.querySelector("#sharp-nav");
@@ -283,6 +438,7 @@
     const route = L.env.dispatchpath;
     const entries = [];
     const groups = ui.menu.getChildren(admin).filter((node2) => node2.name !== "logout");
+    initSidebar(ui, groups, route);
     groups.forEach((group) => {
       const title = _(group.title);
       const items = ui.menu.getChildren(group);
@@ -737,68 +893,214 @@
     sync();
   }
 
+  // frontend/ts/pending.ts
+  function initPendingChanges(ui, indicators) {
+    const button = document.querySelector("#sharp-pending");
+    const panel = document.querySelector("#sharp-pending-notice");
+    const message = document.querySelector("#sharp-pending-message");
+    const dismiss = panel.querySelector("[data-sharp-notice-close]");
+    const notice = bindPopover(button, panel, { toggleTrigger: false });
+    let previousCount = 0;
+    let queued = false;
+    let frame = 0;
+    const review = () => {
+      queued = false;
+      closePopover(false, true);
+      closeDialogs();
+      ui.changes.displayChanges();
+    };
+    button.addEventListener("click", review);
+    panel.querySelector("[data-sharp-pending-review]").addEventListener("click", review);
+    dismiss.title = t("Dismiss notification");
+    dismiss.setAttribute("aria-label", dismiss.title);
+    dismiss.addEventListener("click", () => {
+      queued = false;
+      notice.close(true);
+    });
+    const showWhenReady = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (document.body.classList.contains("modal-overlay-active") || document.querySelector(".sharp-dialog[open]")) {
+          notice.close(false, true);
+          return;
+        }
+        if (!queued || button.hidden) return;
+        queued = false;
+        notice.open();
+      });
+    };
+    const modalObserver = new MutationObserver(showWhenReady);
+    modalObserver.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    document.querySelectorAll(".sharp-dialog").forEach((dialog) => {
+      modalObserver.observe(dialog, { attributes: true, attributeFilter: ["open"] });
+    });
+    return () => {
+      const available = indicators.querySelector('[data-indicator="uci-changes"]') !== null;
+      const count = available ? Object.values(ui.changes.changes ?? {}).reduce((sum, changes) => sum + changes.length, 0) : 0;
+      const label = tn(count, "%d pending configuration change; click to review", "%d pending configuration changes; click to review");
+      button.hidden = count === 0;
+      button.querySelector("[data-sharp-pending-count]").textContent = String(count);
+      button.title = label;
+      button.setAttribute("aria-label", label);
+      if (count === previousCount) return;
+      previousCount = count;
+      queued = count > 0;
+      if (!count) {
+        const focusInside = panel.contains(document.activeElement) || button === document.activeElement;
+        notice.close(false, true);
+        if (focusInside) document.querySelector(".sharp-header .sharp-brand")?.focus({ preventScroll: true });
+        return;
+      }
+      message.textContent = tn(count, "You have %d unsaved configuration change", "You have %d unsaved configuration changes");
+      showWhenReady();
+    };
+  }
+
+  // frontend/ts/login.ts
+  function initLogin() {
+    const input = document.querySelector("#sharp-password");
+    const toggle = document.querySelector(".sharp-login-password-toggle");
+    if (!input || !toggle) return;
+    const showLabel = toggle.dataset.showLabel;
+    const hideLabel = toggle.dataset.hideLabel;
+    if (!showLabel || !hideLabel) return;
+    const sync = () => {
+      const revealed = input.type === "text";
+      const label = revealed ? hideLabel : showLabel;
+      toggle.title = label;
+      toggle.setAttribute("aria-label", label);
+      toggle.replaceChildren(icon(revealed ? "eye-off" : "eye"));
+    };
+    toggle.addEventListener("click", () => {
+      input.type = input.type === "password" ? "text" : "password";
+      sync();
+    });
+    window.addEventListener("pagehide", () => {
+      input.type = "password";
+      sync();
+    });
+    sync();
+    toggle.hidden = false;
+  }
+
   // frontend/ts/main.ts
   renderIcons();
   initAppearance();
+  initDesktopLayout();
   bindPopoverDismissal();
   initContentLayout();
   initMobileDialogs();
-  function initRefresh(ui) {
-    const refreshes = document.querySelectorAll("[data-sharp-refresh]");
-    const pendingButtons = document.querySelectorAll("[data-sharp-pending]");
-    const indicators = document.querySelector("#indicators");
-    let formEdited = false;
-    document.querySelector("#maincontent")?.addEventListener("input", () => {
-      formEdited = true;
-    });
-    refreshes.forEach((refresh) => {
-      refresh.title = t("Refresh current page");
-      refresh.setAttribute("aria-label", refresh.title);
-      refresh.addEventListener("click", () => {
-        if (formEdited && !confirm(t("Refreshing discards unsaved input on this page. Continue?"))) return;
-        window.location.reload();
+  initLogin();
+  document.querySelectorAll("[data-sharp-brand-logo]").forEach((image) => {
+    const fallback = () => {
+      const source = image.dataset.sharpBrandFallback;
+      if (source && image.getAttribute("src") !== source) image.src = source;
+    };
+    image.addEventListener("error", fallback);
+    if (image.complete && !image.naturalWidth) fallback();
+  });
+  document.querySelectorAll("[data-sharp-login-background]").forEach((image) => {
+    const fallback = () => {
+      image.hidden = true;
+    };
+    image.addEventListener("error", fallback);
+    if (image.complete && !image.naturalWidth) fallback();
+    const source = image.dataset.wallpaperSource;
+    const endpoint = image.dataset.wallpaperEndpoint;
+    if (!endpoint || source !== "bing" && source !== "wallhaven") return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 8e3);
+    const stop = () => controller.abort();
+    window.addEventListener("pagehide", stop, { once: true });
+    void fetch(endpoint + "?source=" + source, { signal: controller.signal, credentials: "omit", cache: "no-store" }).then(async (response) => {
+      if (!response.ok) return;
+      const result = await response.json();
+      if (typeof result.url !== "string") return;
+      const allowed = source === "bing" ? /^https:\/\/www\.bing\.com\/th\?id=OHR\.[A-Za-z0-9_.=&-]+$/ : /^https:\/\/w\.wallhaven\.cc\/full\/[a-z0-9]{2}\/wallhaven-[a-z0-9]{6}\.(jpg|png)$/;
+      if (!allowed.test(result.url) || controller.signal.aborted) return;
+      const online = new Image();
+      online.referrerPolicy = "no-referrer";
+      window.clearTimeout(timer);
+      const url = result.url;
+      await new Promise((resolve) => {
+        const finish = () => {
+          window.clearTimeout(imageTimer);
+          online.onload = online.onerror = null;
+          controller.signal.removeEventListener("abort", cancel);
+          resolve();
+        };
+        const cancel = () => {
+          online.src = "";
+          finish();
+        };
+        const imageTimer = window.setTimeout(cancel, 1e4);
+        controller.signal.addEventListener("abort", cancel, { once: true });
+        online.onload = () => {
+          if (!controller.signal.aborted) {
+            image.referrerPolicy = "no-referrer";
+            image.src = online.src;
+            image.hidden = false;
+          }
+          finish();
+        };
+        online.onerror = finish;
+        online.src = url;
       });
+    }).catch(() => {
+    }).finally(() => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pagehide", stop);
     });
-    pendingButtons.forEach((pending) => {
-      pending.addEventListener("click", () => {
-        closeDialogs();
-        ui.changes.displayChanges();
+  });
+  function initIndicators(ui) {
+    const refreshes = document.querySelectorAll("[data-sharp-refresh]");
+    const indicators = document.querySelector("#indicators");
+    const syncPending = initPendingChanges(ui, indicators);
+    refreshes.forEach((refresh) => {
+      refresh.addEventListener("click", () => {
+        indicators.querySelector('[data-indicator="poll-status"]')?.click();
       });
     });
     const sync = () => {
-      const count = Object.values(ui.changes.changes ?? {}).reduce((sum, changes) => sum + changes.length, 0);
-      const available = indicators.querySelector('[data-indicator="uci-changes"]') !== null;
-      const label = tn(count, "%d pending configuration change; click to review", "%d pending configuration changes; click to review");
-      const hidden = !available || count === 0;
-      pendingButtons.forEach((pending) => {
-        pending.hidden = hidden;
-        const countLabel = pending.querySelector("[data-sharp-pending-count]");
-        if (countLabel) countLabel.textContent = String(count);
-        pending.title = label;
-        pending.setAttribute("aria-label", label);
+      const pollStatus = indicators.querySelector('[data-indicator="poll-status"]');
+      const paused = pollStatus?.dataset.style === "inactive";
+      const refreshLabel = paused ? t("Automatic refresh paused; click to resume") : t("Automatically refreshing; click to pause");
+      refreshes.forEach((refresh) => {
+        refresh.hidden = !pollStatus;
+        refresh.title = refreshLabel;
+        refresh.setAttribute("aria-label", refreshLabel);
+        const indicator = refresh.querySelector("[data-sharp-icon]");
+        const name = paused ? "pause" : "refresh";
+        if (indicator && indicator.dataset.sharpIcon !== name) {
+          indicator.dataset.sharpIcon = name;
+          indicator.replaceChildren(icon(name));
+        }
       });
+      syncPending();
     };
-    new MutationObserver(sync).observe(indicators, { childList: true, subtree: true, characterData: true });
-    document.addEventListener("uci-applied", () => {
-      formEdited = false;
-      sync();
+    new MutationObserver(sync).observe(indicators, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["data-style"]
     });
-    document.addEventListener("uci-reverted", () => {
-      formEdited = false;
-      sync();
-    });
+    document.addEventListener("uci-applied", sync);
+    document.addEventListener("uci-reverted", sync);
     sync();
   }
   async function start() {
     if (!document.querySelector("#sharp-header")) return;
     const ui = await L.require("ui");
+    await ui.changes.init?.();
+    initIndicators(ui);
     const tree = await ui.menu.load();
     initSearch(initNavigation(ui, tree));
-    initRefresh(ui);
   }
   void start().catch((error) => {
     console.error("Sharp navigation failed:", error);
-    document.querySelectorAll("#sharp-nav, #sharp-mobile-nav").forEach((nav) => {
+    document.querySelectorAll("#sharp-nav, #sharp-mobile-nav, #sharp-sidebar-secondary").forEach((nav) => {
       nav.textContent = t("Menu unavailable. Please refresh.");
     });
   });

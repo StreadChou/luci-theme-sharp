@@ -1,0 +1,97 @@
+{% include('header') %}
+<div id="view">
+    <div class="cbi-map" id="sharp-config">
+        <h2>{{ _('Sharp theme settings') }}</h2>
+        <section class="cbi-section sharp-layout-settings" aria-label="{{ _('Main interface') }}">
+            <div class="cbi-value sharp-layout-setting">
+                <h3 class="cbi-value-title" id="sharp-desktop-layout-title">{{ _('Desktop layout', 'sharp') }}</h3>
+                <div class="cbi-value-field sharp-layout-options" role="radiogroup" aria-labelledby="sharp-desktop-layout-title" aria-describedby="sharp-desktop-layout-help">
+                    <label class="sharp-layout-option">
+                        <span class="sharp-layout-preview" aria-hidden="true">
+                            <svg class="sharp-layout-miniature sharp-layout-miniature-desktop" viewBox="0 0 280 160" focusable="false">
+                                <path class="sharp-layout-surface" d="M0 0h280v25H0z"/>
+                                <path class="sharp-layout-divider" d="M0 25h280"/>
+                                <rect class="sharp-layout-accent" x="10" y="8" width="9" height="9"/>
+                                <path class="sharp-layout-ink" d="M23 10h19v5H23z"/>
+                                <path class="sharp-layout-accent" d="M55 11h18v4H55zM55 23h18v2H55z"/>
+                                <path class="sharp-layout-muted" d="M82 11h18v4H82zM109 11h18v4h-18z"/>
+                                <rect class="sharp-layout-block" x="139" y="7" width="54" height="11"/>
+                                <path class="sharp-layout-muted" d="M221 10h5v5h-5zM235 10h5v5h-5zM249 10h5v5h-5z"/>
+                                <rect class="sharp-layout-accent" x="263" y="9" width="7" height="7"/>
+                                <path class="sharp-layout-muted" d="M12 38h23v4H12zM45 38h23v4H45zM228 38h40v3h-40z"/>
+                                <path class="sharp-layout-divider" d="M12 48h256"/>
+                                <path class="sharp-layout-accent" d="M12 47h23v2H12z"/>
+                                <path class="sharp-layout-panel" d="M12 59h80v30H12zM100 59h80v30h-80zM188 59h80v30h-80zM12 99h256v48H12z"/>
+                                <path class="sharp-layout-muted" d="M20 67h24v3H20zM108 67h24v3h-24zM196 67h24v3h-24z"/>
+                                <path class="sharp-layout-block" d="M20 77h44v4H20zM108 77h44v4h-44zM196 77h44v4h-44zM20 108h67v4H20zM20 121h240v3H20zM20 133h240v3H20z"/>
+                            </svg>
+                        </span>
+                        <span class="sharp-layout-caption">
+                            <input type="radio" name="sharp-desktop-layout" value="default" checked>
+                            <span>{{ _('Default (OpenWrt-like)', 'sharp') }}</span>
+                        </span>
+                    </label>
+                    <label class="sharp-layout-option">
+                        <span class="sharp-layout-preview" aria-hidden="true">
+                            <svg class="sharp-layout-miniature sharp-layout-miniature-desktop" viewBox="0 0 280 160" focusable="false">
+                                <path class="sharp-layout-surface" d="M0 0h280v25H0zM27 25h58v135H27z"/>
+                                <path class="sharp-layout-divider" d="M0 25h280M27 25v135M85 25v135"/>
+                                <rect class="sharp-layout-accent" x="10" y="8" width="9" height="9"/>
+                                <path class="sharp-layout-ink" d="M23 10h19v5H23z"/>
+                                <rect class="sharp-layout-block" x="55" y="7" width="54" height="11"/>
+                                <path class="sharp-layout-muted" d="M221 10h5v5h-5zM235 10h5v5h-5zM249 10h5v5h-5z"/>
+                                <rect class="sharp-layout-accent" x="263" y="9" width="7" height="7"/>
+                                <path class="sharp-layout-muted" d="M10 35h7v7h-7zM7 46h13v3H7zM10 93h7v7h-7zM7 104h13v3H7z"/>
+                                <rect class="sharp-layout-block" x="3" y="56" width="21" height="27"/>
+                                <path class="sharp-layout-accent" d="M10 64h7v7h-7zM7 75h13v3H7zM33 70h46v14H33z"/>
+                                <path class="sharp-layout-muted" d="M38 39h35v3H38zM38 57h24v3H38zM38 93h29v3H38zM38 111h34v3H38zM38 129h25v3H38z"/>
+                                <path class="sharp-layout-surface" d="M38 76h31v3H38z"/>
+                                <path class="sharp-layout-muted" d="M97 38h23v4H97zM130 38h23v4h-23zM228 38h40v3h-40z"/>
+                                <path class="sharp-layout-divider" d="M97 48h171"/>
+                                <path class="sharp-layout-accent" d="M97 47h23v2H97z"/>
+                                <path class="sharp-layout-panel" d="M97 59h81v30H97zM187 59h81v30h-81zM97 99h171v48H97z"/>
+                                <path class="sharp-layout-muted" d="M105 67h24v3h-24zM195 67h24v3h-24z"/>
+                                <path class="sharp-layout-block" d="M105 77h44v4h-44zM195 77h44v4h-44zM105 108h67v4h-67zM105 121h155v3H105zM105 133h155v3H105z"/>
+                            </svg>
+                        </span>
+                        <span class="sharp-layout-caption">
+                            <input type="radio" name="sharp-desktop-layout" value="argon">
+                            <span>{{ _('Argon-like', 'sharp') }}</span>
+                        </span>
+                    </label>
+                    <p id="sharp-desktop-layout-help" class="cbi-value-description sharp-layout-help">{{ _('Layout changes apply immediately and are saved in this browser.', 'sharp') }}</p>
+                </div>
+            </div>
+            <div class="cbi-value sharp-layout-setting">
+                <h3 class="cbi-value-title" id="sharp-mobile-layout-title">{{ _('Mobile layout', 'sharp') }}</h3>
+                <div class="cbi-value-field sharp-layout-options" role="radiogroup" aria-labelledby="sharp-mobile-layout-title">
+                    <label class="sharp-layout-option">
+                        <span class="sharp-layout-preview" aria-hidden="true">
+                            <svg class="sharp-layout-miniature sharp-layout-miniature-mobile" viewBox="0 0 100 160" focusable="false">
+                                <path class="sharp-layout-surface" d="M0 0h100v24H0z"/>
+                                <path class="sharp-layout-divider" d="M0 24h100"/>
+                                <path class="sharp-layout-menu" d="M8 9h7M8 12h7M8 15h7"/>
+                                <rect class="sharp-layout-accent" x="36" y="8" width="7" height="7"/>
+                                <path class="sharp-layout-ink" d="M46 10h17v4H46z"/>
+                                <circle class="sharp-layout-menu" cx="79" cy="11" r="3"/>
+                                <path class="sharp-layout-menu" d="m81 13 3 3"/>
+                                <rect class="sharp-layout-muted" x="90" y="9" width="5" height="5"/>
+                                <path class="sharp-layout-muted" d="M8 33h18v3H8zM34 33h18v3H34zM60 33h18v3H60z"/>
+                                <path class="sharp-layout-divider" d="M8 41h84"/>
+                                <path class="sharp-layout-accent" d="M8 40h18v2H8z"/>
+                                <path class="sharp-layout-panel" d="M8 49h84v26H8zM8 83h84v26H8zM8 117h84v29H8z"/>
+                                <path class="sharp-layout-muted" d="M15 56h25v3H15zM15 90h25v3H15zM15 124h25v3H15z"/>
+                                <path class="sharp-layout-block" d="M15 64h51v4H15zM15 98h51v4H15zM15 133h69v4H15z"/>
+                            </svg>
+                        </span>
+                        <span class="sharp-layout-caption">
+                            <input type="radio" name="sharp-mobile-layout" value="default" checked>
+                            <span>{{ _('Default', 'sharp') }}</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% include('footer') %}

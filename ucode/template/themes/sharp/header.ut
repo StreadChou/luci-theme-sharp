@@ -12,9 +12,8 @@
             <span data-sharp-icon="menu" aria-hidden="true"></span>
         </button>
         <div class="sharp-header-start">
-            <a class="sharp-brand" href="{{ dispatcher.build_url('admin') }}" aria-label="Sharp {{ entityencode(hostname, true) }}">
-                <img src="{{ media }}/logo.svg" width="28" height="28" alt="">
-                <span>SHARP</span>
+            <a class="sharp-brand" href="{{ dispatcher.build_url('admin') }}" title="{{ entityencode(hostname, true) }}">
+                {% include('themes/sharp/brand') %}
             </a>
             <nav id="sharp-nav" class="sharp-nav" aria-label="{{ _('Main menu', 'sharp') }}"></nav>
             <button class="sharp-search-trigger sharp-search-desktop" type="button" data-sharp-search-open
@@ -26,7 +25,8 @@
         </div>
         <div class="sharp-header-end">
             <div id="indicators" class="sharp-native-indicators"></div>
-            <button class="sharp-icon-button sharp-desktop-only" id="sharp-refresh" data-sharp-refresh type="button" title="{{ _('Refresh', 'sharp') }}" aria-label="{{ _('Refresh', 'sharp') }}">
+            <button class="sharp-icon-button sharp-desktop-only" id="sharp-refresh" data-sharp-refresh type="button" hidden
+                title="{{ _('Automatically refreshing; click to pause', 'sharp') }}" aria-label="{{ _('Automatically refreshing; click to pause', 'sharp') }}">
                 <span data-sharp-icon="refresh" aria-hidden="true"></span>
             </button>
             <button class="sharp-icon-button sharp-search-mobile" type="button" data-sharp-search-open
@@ -34,9 +34,20 @@
                 aria-haspopup="dialog" aria-controls="sharp-search-dialog">
                 <span data-sharp-icon="search" aria-hidden="true"></span>
             </button>
-            <button id="sharp-pending" class="sharp-pending" data-sharp-pending type="button" hidden>
-                <span data-sharp-pending-count class="sharp-pending-count" aria-hidden="true"></span>
-            </button>
+            <div class="sharp-control sharp-pending-control">
+                <button id="sharp-pending" class="sharp-pending" data-sharp-pending type="button" aria-haspopup="dialog" hidden>
+                    <span data-sharp-pending-count class="sharp-pending-count" aria-hidden="true"></span>
+                </button>
+                <div id="sharp-pending-notice" class="sharp-popover sharp-pending-notice" hidden>
+                    <button class="sharp-menu-item" type="button" data-sharp-pending-review aria-haspopup="dialog">
+                        <span id="sharp-pending-message" aria-live="polite" aria-atomic="true"></span>
+                    </button>
+                    <button class="sharp-icon-button" type="button" data-sharp-notice-close
+                        title="{{ _('Dismiss notification', 'sharp') }}" aria-label="{{ _('Dismiss notification', 'sharp') }}">
+                        <span data-sharp-icon="close" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
             <button id="sharp-settings-toggle" class="sharp-icon-button sharp-mobile-only" type="button"
                 aria-label="{{ _('Settings', 'sharp') }}" aria-haspopup="dialog" aria-controls="sharp-settings-dialog" aria-expanded="false">
                 <span data-sharp-icon="settings" aria-hidden="true"></span>
@@ -105,6 +116,12 @@
         <div id="sharp-search-results" class="sharp-search-results"></div>
         <p id="sharp-search-status" class="visually-hidden" role="status"></p>
     </dialog>
+    <div class="sharp-workspace">
+        <aside id="sharp-sidebar" class="sharp-sidebar" aria-label="{{ _('Navigation', 'sharp') }}">
+            <nav id="sharp-sidebar-primary" class="sharp-sidebar-primary" aria-label="{{ _('Main menu', 'sharp') }}"></nav>
+            <div id="sharp-sidebar-secondary" class="sharp-sidebar-secondary"></div>
+        </aside>
+        <div class="sharp-workspace-content">
     <main id="maincontent" class="sharp-main" tabindex="-1">
         <div class="sharp-page-meta"><span id="sharp-breadcrumb"></span></div>
         <noscript><div class="alert-message error">{{ _('You must enable JavaScript in your browser or LuCI will not work properly.', 'sharp') }}</div></noscript>

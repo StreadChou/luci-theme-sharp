@@ -1,4 +1,6 @@
 @import './tokens.css';
 @import './shell.css';
+@import './sidebar.css';
 @import './luci.css';
+@import './settings.css';
 @import './motion.css';

@@ -1,0 +1,86 @@
+#!/bin/sh
+# Public login decoration only: two fixed providers, no arbitrary URL input.
+umask 077
+reply() {
+    printf 'Content-Type: application/json\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n'
+    printf '{"url":"%s"}\n' "$1"
+}
+[ "$REQUEST_METHOD" = GET ] || { printf 'Status: 405 Method Not Allowed\r\nAllow: GET\r\n'; reply ''; exit; }
+case "$QUERY_STRING" in
+    source=bing)
+        source=bing
+        endpoint='https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1'
+        expression='@.images[0].url'
+        ;;
+    source=wallhaven)
+        source=wallhaven
+        endpoint='https://wallhaven.cc/api/v1/search?q=landscape&categories=100&purity=100&atleast=1920x1080&sorting=random'
+        expression='@.data[0].path'
+        ;;
+    *) printf 'Status: 400 Bad Request\r\n'; reply ''; exit ;;
+esac
+
+cache_dir=/var/run/sharp-wallpaper
+mkdir -p "$cache_dir" || { reply ''; exit; }
+cache="$cache_dir/$source.url"
+lock="$cache_dir/$source.lock"
+# Recover an abandoned CGI lock after its maximum fetch budget has elapsed.
+if [ -d "$lock" ] && [ "$(( $(date +%s) - $(date -r "$lock" +%s) ))" -gt 20 ]; then
+    rm -f "$lock/body" "$lock/url"
+    rmdir "$lock" 2>/dev/null
+fi
+if [ -f "$cache" ]; then
+    age=$(( $(date +%s) - $(date -r "$cache" +%s) ))
+    ttl=120
+    [ ! -s "$cache" ] || ttl=43200
+    if [ "$age" -ge 0 ] && [ "$age" -lt "$ttl" ]; then
+        reply "$(cat "$cache")"
+        exit
+    fi
+fi
+# A concurrent cold request uses the built-in image instead of another fetch.
+mkdir "$lock" 2>/dev/null || { reply ''; exit; }
+fetch_pid=
+watch_pid=
+cleanup() {
+    [ -z "$fetch_pid" ] || kill "$fetch_pid" 2>/dev/null
+    [ -z "$watch_pid" ] || kill "$watch_pid" 2>/dev/null
+    rm -f "$lock/body" "$lock/url"
+    rmdir "$lock" 2>/dev/null
+}
+trap cleanup EXIT
+trap 'exit 1' HUP INT TERM
+
+downloader=/usr/libexec/wget-ssl
+[ -x "$downloader" ] || downloader="$(command -v uclient-fetch)"
+image=
+if [ -n "$downloader" ]; then
+    # Bound output size and the whole operation, including stalled responses.
+    (ulimit -f 512; exec "$downloader" -q -T 5 -O "$lock/body" "$endpoint") >/dev/null 2>&1 &
+    fetch_pid=$!
+    (sleep 6; kill "$fetch_pid" 2>/dev/null) >/dev/null 2>&1 &
+    watch_pid=$!
+    if wait "$fetch_pid"; then
+        image="$(jsonfilter -i "$lock/body" -e "$expression" 2>/dev/null)"
+    fi
+    fetch_pid=
+    kill "$watch_pid" 2>/dev/null
+    wait "$watch_pid" 2>/dev/null
+    watch_pid=
+fi
+# Only HTTPS images on the provider's own image host can reach the browser.
+safe_image="$(printf '%s' "$image" | tr -cd 'A-Za-z0-9_./:?=&-')"
+[ "$safe_image" = "$image" ] || image=
+case "$source" in
+    bing)
+        if [ "${#image}" -le 2048 ] && printf '%s' "$image" | grep -Eq '^/th\?id=OHR\.[A-Za-z0-9_.-]+\.jpg(&[A-Za-z0-9_.=-]+)*$'; then
+            image="https://www.bing.com$image"
+        else image=; fi
+        ;;
+    wallhaven)
+        printf '%s' "$image" | grep -Eq '^https://w\.wallhaven\.cc/full/[a-z0-9]{2}/wallhaven-[a-z0-9]{6}\.(jpg|png)$' || image=
+        ;;
+esac
+printf '%s' "$image" > "$lock/url"
+mv "$lock/url" "$cache"
+reply "$image"
